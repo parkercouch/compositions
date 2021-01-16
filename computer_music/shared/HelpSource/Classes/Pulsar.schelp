@@ -1,0 +1,32 @@
+TITLE:: Pulsar
+summary:: pulsing sounds
+categories:: synth
+
+DESCRIPTION::
+Creates pulsing sounds
+
+
+CLASSMETHODS::
+METHOD::new
+Create a new Pulsar with a given fundamental frequency
+ARGUMENT::fundamental
+Which frequency to use for the main tone. Defaults to 100Hz
+DISCUSSION::
+This is setting up synth to be run later.
+Not sure if passing in patterns is doable
+
+
+INSTANCEMETHODS::
+METHOD::play
+Start the pulsing
+
+METHOD::stop
+Stop the pulsing
+
+EXAMPLES::
+
+code::
+x = Pulsar(200);
+x.play;
+x.stop;
+::
