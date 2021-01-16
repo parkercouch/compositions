@@ -1,0 +1,21 @@
+TITLE:: CompositionOne
+summary:: computer music composition one
+categories:: composition
+
+DESCRIPTION::
+Wrapper object for the entire composition one for computer music winter quarter
+
+
+CLASSMETHODS::
+play
+
+
+INSTANCEMETHODS::
+
+
+EXAMPLES::
+
+code::
+// Plays (static) composition
+CompositionOne.play;
+::

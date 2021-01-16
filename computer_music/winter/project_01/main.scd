@@ -18,3 +18,5 @@ s.options.numInputBusChannels = 2;
 s.options.memSize = 2.pow(20);
 s.reboot;
 )
+
+CompositionOne.play;
