@@ -11,6 +11,8 @@ METHOD::new
 Create a new Pulsar with a given fundamental frequency
 ARGUMENT::fundamental
 Which frequency to use for the main tone. Defaults to 100Hz
+ARGUMENT::seed
+Provide a seed value to control randomness
 DISCUSSION::
 This is setting up synth to be run later.
 Not sure if passing in patterns is doable
@@ -23,10 +25,18 @@ Start the pulsing
 METHOD::stop
 Stop the pulsing
 
+METHOD::set
+Modify running synthesizer
+ARGUMENT::key
+Which arg to update: \fund, \width, \ampHz, \maxPartial
+ARGUMENT::value
+The value to update arg to
+
 EXAMPLES::
 
 code::
 x = Pulsar(200);
 x.play;
+x.set(\fund, 50);
 x.stop;
 ::
