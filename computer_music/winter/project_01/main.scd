@@ -20,7 +20,7 @@ s.reboot;
 )
 
 
-(
+( // COMPOSITION
 ~composition = Ppar([
   Pseq([
     ~phraseIntro,
@@ -37,7 +37,7 @@ s.reboot;
 // ---------------------- PHRASES ------------------------ //
 // ------------------------------------------------------- //
 
-(
+( // phraseIntro
 ~phraseIntro = Ppar([
   Pbind(*[
     instrument: \pulsar,
@@ -52,7 +52,7 @@ s.reboot;
 ], 1);
 )
 
-(
+( // phrase1
 ~phrase1 = Ppar([
   Pbind(*[
     instrument: \pulsar,
@@ -89,39 +89,89 @@ s.reboot;
     // tones: #[-5.0, 100, 500],
     tones: [-5.0, 100, 500],
     // tones: [-800, 1000, 500],
+    pan: -0.2,
   ]),
 ], 1);
 )
 
-(
+( // phrase2
 ~phrase2 = Ppar([
   Pbind(*[
     instrument: \pulsar,
-    fund: Pseq([35, 20, 50], inf),
+    fund: Pseq([35, 20, 50], 6),
     // fund: Pseq([15, 5, 12], inf),
     randSeed: 150,
-    maxPartial: Pfunc {|n| n * 0.9} <> Pkey(\fund),
-    ampHz: Pfunc {|n| n * 1000} <> Pkey(\fund),
-    width: 0.2,
+    maxPartial: Pfunc {|n| n * 0.7} <> Pkey(\fund),
+    ampHz: Pfunc {|n| n * 10000} <> Pkey(\fund),
+    width: 0.5,
     dur: 8.00,
   ]),
+  // Pbind(*[
+  //   instrument: \technokick,
+  //   spread: Pseq([0.9,0.8,0.6,0], inf),
+  //   click: Pwhite(0.006, 0.008, inf),
+  //   dur: 2,
+  //   legato: 1,
+  //   // midinote: Pseq([Pseq([32], 4), Pseq([28], 4)]);
+  //   midinote: Pseq([Pseq([32], 4), Pseq([28], 4)]);
+  // ]),
   Pbind(*[
-    instrument: \technokick,
-    spread: Pseq([0.9,0.8,0.6,0], inf),
-    click: Pwhite(0.006, 0.008, inf),
-    dur: 2,
-    legato: 1,
-    // midinote: Pseq([Pseq([32], 4), Pseq([28], 4)]);
-    midinote: Pseq([Pseq([32], 4), Pseq([28], 4)]);
+    instrument: \hihat,
+    dur: Pseq([
+      // 1/4,      1/8, 1/8, 1/8, 1/8, 1/8, 1/8,
+      // 1/8, 1/4,      1/8, 1/8, 1/8, 1/8, 1/8,
+      // 1/8, 1/8, 1/4,      1/8, 1/8, 1/8, 1/8,
+      // 1/8, 1/8, 1/8, 1/4,      1/8, 1/8, 1/8,
+      // 1/8, 1/8, 1/8, 1/8, 1/4,      1/8, 1/8,
+      // 1/8, 1/8, 1/8, 1/8, 1/8, 1/4,      1/8,
+      // 1/8, 1/8, 1/8, 1/8, 1/8, 1/8, Rest(10/8),
+
+      1/4,      1/8, 1/8, 1/8, 1/8, 1/4,     
+      1/8, 1/4,      1/8, 1/8, 1/4,      1/8,
+      1/8, 1/8, 1/4,      1/4,      1/8, 1/8,
+      1/8, 1/8, 1/8, 1/4,      1/8, 1/8, 1/8,
+      1/8, 1/8, 1/4,      1/4,      1/8, 1/8,
+      1/8, 1/4,      1/8, 1/8, 1/4,      1/8,
+      1/4,      1/8, 1/8, 1/8, 1/8, Rest(10/8),
+    ], 30),
+    att: 0.01,
+    rel: 0.35,
+    ffreq: 5100,
+    // pan: 0,
+    // pan: -1,
+    pan: 0.2,
+    amp: 0.3,
+    // tempo: 50/60,
+  ]),
+  Pbind(*[
+    instrument: \kicker,
+    dur: Pseq([
+      1/4,      Rest(1/8), Rest(1/8), Rest(1/8), Rest(1/8), 1/4,     
+      Rest(1/8), 1/4,      Rest(1/8), Rest(1/8), 1/4,      Rest(1/8),
+      Rest(1/8), Rest(1/8), 1/4,      1/4,      Rest(1/8), Rest(1/8),
+      Rest(1/8), Rest(1/8), Rest(1/8), 1/4,      Rest(1/8), Rest(1/8), Rest(1/8),
+      Rest(1/8), Rest(1/8), 1/4,      1/4,      Rest(1/8), Rest(1/8),
+      Rest(1/8), 1/4,      Rest(1/8), Rest(1/8), 1/4,      Rest(1/8),
+      1/4,      Rest(1/8), Rest(1/8), Rest(1/8), Rest(1/8), Rest(10/8),
+    ], 6),
+    amp: 0.25,
+    // sustain: 1.5,
+    sustain: 0.2,
+    // pan: 1,
+    pan: -0.2,
+    // tones: #[-500.0, 100, 500],
+    // tones: [-0.1, 110, 0.1],
+    // tones: [-800, 1000, 500],
   ]),
 ], 1);
 )
 
-(
+( // phrase3
 ~phrase3 = Ppar([
   Pbind(*[
     instrument: \pulsar,
-    fund: Pseq([35, 20, 48]),
+    // fund: Pseq([35, 20, 48]),
+    fund: Pseq([33, 21, 47]),
     // fund: Pseq([25, 20, 19], inf),
     randSeed: 150,
     maxPartial: 10,
@@ -130,13 +180,58 @@ s.reboot;
     dur: 4,
   ]),
   Pbind(*[
-    instrument: \technokick,
-    spread: Pseq([0.9,0.8,0.6,0], inf),
-    click: Pwhite(0.006, 0.008, inf),
-    dur: 2,
-    legato: 1,
-    // midinote: Pseq([Pseq([32], 4), Pseq([28], 4)]);
-    midinote: Pseq([Pseq([32], 3), Pseq([28], 3)]);
+    instrument: "snare",
+    dur: Pseq([
+      1,
+      1,
+      1,
+      1,
+      1/2, 1/2,
+      1/2, 1/2,
+      1/2, 1/2,
+      1/2, Rest(1/2),
+      1/4, 1/4, 1/4, 1/4,
+      1/4, 1/4, 1/4, 1/4,
+      1/4, 1/4, 1/4, 1/4,
+      1/4, 1/4, Rest(1/4), Rest(1/4),
+    ], 1),
+    att: 0.01,
+    rel: 0.3,
+    // sinfreq: 742,
+    sinfreq: 42,
+    // ffreq: 200000,
+    ffreq: 20,
+    amp: 0.35,
+    // pan: -1,
+    pan: 0.2,
+  ]),
+  Pbind(*[
+    instrument: \kicker,
+    dur: Pseq([
+      4.0,
+      4.0,
+      2.0, 2.0,
+      // 2.0,
+      // 1.0,
+      // 1.0,
+      // 1.0,
+    ]),
+    amp: 0.15,
+    // sustain: 1.5,
+    sustain: Pseq([
+      4.0,
+      4.0,
+      2.0,
+      1.5,
+      // 1.5,
+      // 1.5,
+      // 1.5,
+    ]),
+    // tones: #[-5.0, 100, 500],
+    tones: [-0.1, 0, 0.1],
+    // tones: [-800, 1000, 500],
+    // pan: 1,
+    pan: -0.2,
   ]),
 ]);
 )
@@ -162,6 +257,34 @@ SynthDef(\kicker, {
   snd = (snd * 0.6).clip(-1, 1);
   Out.ar(\out.kr(0), Pan2.ar(snd, \pan.kr(0), \amp.kr(0.1)));
 }).add;
+)
+
+( // SNARE
+SynthDef(\snare, {
+  arg out = 0, amp = 0.1, sinfreq = 180, att = 0.01, rel = 0.2, ffreq = 2000, pan = 0;
+  var env, snd1, snd2, sum;
+  env = Env.perc(att, rel, amp).kr(doneAction: 2);
+  snd1 = HPF.ar(
+    in: WhiteNoise.ar,
+    freq: ffreq,
+    mul: env
+  );
+  snd2 = SinOsc.ar(freq: sinfreq, mul: env);
+  sum = snd1 + snd2;
+  Out.ar(out, Pan2.ar(sum, pan));
+}).add;
+)
+
+(
+Pbind(*[
+  \instrument, "snare",
+  \dur, Pseq([Rest(1/2), 1/2], inf),
+  \att, 0.01,
+  \rel, 0.3,
+  \sinfreq, 742,
+  \ffreq, 200000,
+  \amp, 0.35,
+]).play;
 )
 
 ( // PULSAR
@@ -236,7 +359,7 @@ SynthDef(\pulsar, {
 )
 
 // ------------------------------------------------------- //
-// ---------------------EXPERIMENT------------------------ //
+// -------------------- EXPERIMENT ----------------------- //
 // ------------------------------------------------------- //
 
 Pdef(\pulse).play;
