@@ -21,12 +21,13 @@ s.reboot;
 
 
 ( // COMPOSITION
+TempoClock.default.tempo = 1;
 ~composition = Ppar([
   Pseq([
-    ~phraseIntro,
-    ~phrase1,
-    ~phrase3,
+    // ~phraseIntro,
+    // ~phrase1,
     ~phrase2,
+    ~phrase3,
   ]),
 ], 1).play
 )
@@ -42,7 +43,7 @@ s.reboot;
   Pbind(*[
     instrument: \pulsar,
     // fund: Pseq([40, 30, 50, 20, 100], inf),
-    fund: Pseq([40, 30]),
+    fund: Pseq([41, 30.5]),
     randSeed: 150,
     maxPartial: 10,
     ampHz: 2,
@@ -140,7 +141,7 @@ s.reboot;
     // pan: 0,
     // pan: -1,
     pan: 0.2,
-    amp: 0.3,
+    amp: 0.4,
     // tempo: 50/60,
   ]),
   Pbind(*[
@@ -154,7 +155,7 @@ s.reboot;
       Rest(1/8), 1/4,      Rest(1/8), Rest(1/8), 1/4,      Rest(1/8),
       1/4,      Rest(1/8), Rest(1/8), Rest(1/8), Rest(1/8), Rest(10/8),
     ], 6),
-    amp: 0.25,
+    amp: 0.35,
     // sustain: 1.5,
     sustain: 0.2,
     // pan: 1,
@@ -162,6 +163,48 @@ s.reboot;
     // tones: #[-500.0, 100, 500],
     // tones: [-0.1, 110, 0.1],
     // tones: [-800, 1000, 500],
+  ]),
+  Pbind(*[
+    instrument: \neurosnare,
+    dur: Pseq([
+      // 1,
+      // 1,
+      // 1,
+      // 1,
+      // 1/2, 1/2,
+      // 1/2, 1/2,
+      // 1/2, 1/2,
+      // 1/2, Rest(1/2),
+      // 1/4, 1/4, 1/4, 1/4,
+      // 1/4, 1/4, 1/4, 1/4,
+      // 1/4, 1/4, 1/4, 1/4,
+      // 1/4, 1/4, Rest(1/4), Rest(1/4),
+
+      1/4,       Rest(1/8), Rest(1/8), Rest(1/8), Rest(1/8), 1/4,     
+      Rest(1/8), 1/4,       Rest(1/8), Rest(1/8), 1/4,       Rest(1/8),
+      Rest(1/8), Rest(1/8), 1/4,       1/4,       1/4,       Rest(1/8),
+      Rest(1/8), Rest(1/8), Rest(1/8), 1/4,       Rest(1/8), Rest(1/8), Rest(1/8),
+      Rest(1/8), Rest(1/8), 1/4,       1/4,       Rest(1/8), Rest(1/8),
+      Rest(1/8), 1/4,       Rest(1/8), Rest(1/8), 1/4,       Rest(1/8),
+      1/4,       Rest(1/8), Rest(1/8), Rest(1/8), Rest(1/8), Rest(10/8),
+
+      // Rest(1/4),      1/8, 1/8, 1/8, 1/8, 1/4,     
+      // 1/8, 1/4,      1/8, 1/8, 1/4,      1/8,
+      // 1/8, 1/8, 1/4,      1/4,      1/8, 1/8,
+      // 1/8, 1/8, 1/8, 1/4,      1/8, 1/8, 1/8,
+      // 1/8, 1/8, 1/4,      1/4,      1/8, 1/8,
+      // 1/8, 1/4,      1/8, 1/8, 1/4,      1/8,
+      // 1/4,      1/8, 1/8, 1/8, 1/8, Rest(10/8),
+    ], 6),
+    att: 0.01,
+    rel: 0.3,
+    // sinfreq: 742,
+    sinfreq: 42,
+    // ffreq: 200000,
+    ffreq: 20,
+    amp: 0.35,
+    // pan: -1,
+    pan: 0.2,
   ]),
 ], 1);
 )
@@ -182,18 +225,25 @@ s.reboot;
   Pbind(*[
     instrument: "snare",
     dur: Pseq([
-      1,
-      1,
-      1,
-      1,
-      1/2, 1/2,
-      1/2, 1/2,
-      1/2, 1/2,
-      1/2, Rest(1/2),
-      1/4, 1/4, 1/4, 1/4,
-      1/4, 1/4, 1/4, 1/4,
-      1/4, 1/4, 1/4, 1/4,
-      1/4, 1/4, Rest(1/4), Rest(1/4),
+      // 1,
+      // 1,
+      // 1,
+      // 1,
+      // 1/2, 1/2,
+      // 1/2, 1/2,
+      // 1/2, 1/2,
+      // 1/2, Rest(1/2),
+      // 1/4, 1/4, 1/4, 1/4,
+      // 1/4, 1/4, 1/4, 1/4,
+      // 1/4, 1/4, 1/4, 1/4,
+      // 1/4, 1/4, Rest(1/4), Rest(1/4),
+      1/4,      1/8, 1/8, 1/8, 1/8, 1/4,     
+      1/8, 1/4,      1/8, 1/8, 1/4,      1/8,
+      1/8, 1/8, 1/4,      1/4,      1/8, 1/8,
+      1/8, 1/8, 1/8, 1/4,      1/8, 1/8, 1/8,
+      1/8, 1/8, 1/4,      1/4,      1/8, 1/8,
+      1/8, 1/4,      1/8, 1/8, 1/4,      1/8,
+      1/4,      1/8, 1/8, 1/8, 1/8, Rest(10/8),
     ], 1),
     att: 0.01,
     rel: 0.3,
@@ -279,13 +329,24 @@ SynthDef(\snare, {
 Pbind(*[
   \instrument, "snare",
   \dur, Pseq([Rest(1/2), 1/2], inf),
-  \att, 0.01,
+  \att, 0.02,
   \rel, 0.3,
-  \sinfreq, 742,
-  \ffreq, 200000,
+  \sinfreq, 20,
+  \ffreq, 200,
   \amp, 0.35,
 ]).play;
 )
+
+(
+SynthDef("hihat", {arg out = 0, amp = 0.5, att = 0.01, rel = 0.2, ffreq = 6000, pan = 0;
+	var env, snd;
+	env = Env.perc(att, rel, amp).kr(doneAction: 2);
+	snd = WhiteNoise.ar;
+	snd = HPF.ar(in: snd, freq: ffreq, mul: env);
+	Out.ar(out, Pan2.ar(snd, pan));
+}).add;
+)
+
 
 ( // PULSAR
 SynthDef(\pulsar, {
@@ -296,10 +357,11 @@ SynthDef(\pulsar, {
   randSeed,
   id = 1,
   gate = 1,
-  dur = 1,
-  attack = 0.8,
-  decay = (dur - 0.9),
-  release = 0.1;
+  dur = 1;
+  // dur = 1,
+  // attack = 0.8,
+  // decay = (dur - 0.9),
+  // release = 0.1;
 
   var amp1, amp2, sig1, sig2, freq1, freq2, out1, out2;
   var freq3, freq4, out3, out4, sig3, sig4, amp3, amp4;
@@ -315,12 +377,13 @@ SynthDef(\pulsar, {
   phraseEnv = EnvGen.kr(
     envelope: Env.new(
       levels: [0]++[1.0, 0.8, 0.0],
-      times:       [0.8, dur - 0.9, 0.1],
+      times:       [0.8, (dur - 0.9), 0.1],
       // times:       [0.8, dur, 0.1],
       curve:  [-5, 0, 5],
     ),
     gate: gate,
-    doneAction: Done.freeSelf,
+    // doneAction: Done.freeSelf,
+    doneAction: 2,
   );
 
   // TODO: remove duplication
@@ -337,10 +400,14 @@ SynthDef(\pulsar, {
   freq3 = freq3 * (LFPulse.kr(4)+1);
   freq4 = freq4 * (LFPulse.kr(2)+1);
 
-  sig1 = Pulse.ar(freq1, noteWidth, amp1);
-  sig2 = Pulse.ar(freq2, noteWidth, amp2);
-  sig3 = Pulse.ar(freq3, noteWidth, amp3);
-  sig4 = Pulse.ar(freq4, noteWidth, amp4);
+  // sig1 = Pulse.ar(freq1, noteWidth, amp1);
+  // sig2 = Pulse.ar(freq2, noteWidth, amp2);
+  // sig3 = Pulse.ar(freq3, noteWidth, amp3);
+  // sig4 = Pulse.ar(freq4, noteWidth, amp4);
+  sig1 = Pulse.ar(freq1, noteWidth, amp1 * phraseEnv);
+  sig2 = Pulse.ar(freq2, noteWidth, amp2 * phraseEnv);
+  sig3 = Pulse.ar(freq3, noteWidth, amp3 * phraseEnv);
+  sig4 = Pulse.ar(freq4, noteWidth, amp4 * phraseEnv);
   sig1 = FreeVerb.ar(sig1, 0.7, 0.8, 0.25);
   sig2 = FreeVerb.ar(sig2, 0.7, 0.8, 0.25);
   sig3 = FreeVerb.ar(sig3, 0.7, 0.8, 0.25);
@@ -351,12 +418,20 @@ SynthDef(\pulsar, {
   out3 = Pan2.ar(sig3, SinOsc.kr(SinOsc.kr(0.01, 0).range(0.1, 0.3), pi),phraseEnv);
   out4 = Pan2.ar(sig4, SinOsc.kr(SinOsc.kr(0.01, pi).range(0.1, 0.3), 0), phraseEnv);
 
+  sig1 = Pan2.ar(sig1, SinOsc.kr(SinOsc.kr(0.1, 0).range(1, 2), pi));
+  out2 = Pan2.ar(sig2, SinOsc.kr(SinOsc.kr(0.1, pi).range(1, 2), 0));
+  out3 = Pan2.ar(sig3, SinOsc.kr(SinOsc.kr(0.01, 0).range(0.1, 0.3), pi));
+  out4 = Pan2.ar(sig4, SinOsc.kr(SinOsc.kr(0.01, pi).range(0.1, 0.3), 0));
+
   Out.ar(0, sig1);
   Out.ar(0, out2);
   Out.ar(0, out3);
   Out.ar(0, out4);
 }).add;
 )
+
+
+
 
 // ------------------------------------------------------- //
 // -------------------- EXPERIMENT ----------------------- //
@@ -373,7 +448,7 @@ Pdef(\pulse, Pbind(*[
   maxPartial: 10,
   ampHz: 2,
   width: 0.5,
-  dur: 5.00,
+  dur: 8.00,
 ]));
 )
 
@@ -399,7 +474,7 @@ Pdef(\pulse, Pbind(*[
   maxPartial: 10,
   ampHz: 20000,
   width: 0.5,
-  dur: 4.2125,
+  dur: 4.0,
 ]));
 )
 
