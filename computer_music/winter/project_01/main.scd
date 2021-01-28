@@ -53,8 +53,21 @@ TempoClock.default.tempo = 1;
     ]),
     ~kick.single,
   ]),
-], 1).play
+// ], 1).play;
+], 1);
 )
+
+s.prepareForRecord;
+
+( // RECORD
+TempoClock.default.tempo = 1;
+s.bind({
+  ~composition.play;
+  s.record;
+})
+)
+
+s.stopRecording;
 
 ~composition.stop;
 
