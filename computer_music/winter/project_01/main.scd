@@ -69,6 +69,7 @@ s.bind({
 
 s.stopRecording;
 
+~composition.play;
 ~composition.stop;
 
 // ------------------------------------------------------- //
