@@ -1,0 +1,32 @@
+TITLE:: CallAndResponse
+summary:: Convert numbers to FizzBuzz
+categories:: other
+
+DESCRIPTION::
+FizzBuzz is the following rules:
+For numbers 1-100
+1. Return the given number as a string
+2. If the number is a multiple of 3 then return "Fizz"
+2. If the number is a multiple of 5 then return "Buzz"
+2. If the number is a multiple of both 3 and 5 then return "FizzBuzz"
+
+CLASSMETHODS::
+METHOD::new
+ARGUMENT::numberToConvert
+Which number to convert into FizzBuzz numbers. This must be a number between 1-100
+DISCUSSION::
+Throws Error if number isn't an integer between 1-100
+
+
+INSTANCEMETHODS::
+METHOD::value
+RETURNS::
+FizzBuzz string representation
+
+
+EXAMPLES::
+
+code::
+x = FizzBuzz(15);
+x.value.postln; // -> "FizzBuzz"
+::
