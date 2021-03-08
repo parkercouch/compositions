@@ -1,5 +1,0 @@
-CompositionOne {
-  *play {
-    "Playing...".postln;
-  }
-}
