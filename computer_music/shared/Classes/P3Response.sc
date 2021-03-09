@@ -10,15 +10,15 @@ P3Response : Pattern {
         instrument: options.instrument,
         scale: options.scale,
         octave: options.octave + 1,
-        degree: Pfunc({|n|
+        degree: options.melody collect: {|n|
           [ n, [n-1,Rest(),n+1].choose ]
-        }) <> options.melody,
-        dur: Pfunc({|d|
+        },
+        dur: options.rhythm collect: {|d|
           var skew = rrand(0.08, 0.12);
           [d-skew, d, d+skew].choose.max(0.05)
-        }) <> options.rhythm,
+        },
         amp: options.amp,
-        pan: -1*options.pan,
+        pan: [options.pan] collect: (-1 * _),
       ]),
     ]);
 

@@ -93,4 +93,3 @@ SynthDef(\FMRhodes1, {
 
 ~sequence.trace.play;
 )
-
