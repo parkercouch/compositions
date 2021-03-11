@@ -106,7 +106,7 @@ a = Env.pairs(
 ~wah = Pbind(*[
   instrument: \FMGrain,
   envbuf: -1,
-  carfreq: Pseq([100, 200, 400, 800, 1600]/2, 5),
+  carfreq: Pseq([100, 200, 400, 800, 1600].reverse /2, 5),
   modfreq: Pkey(\carfreq) / 4,
   rate: Pkey(\carfreq) / 10,
   grain_length: 0.51,
@@ -129,6 +129,7 @@ b = Env.pairs(
     [ 6, -1],
     [ 8,  0],
     [10,  1],
+    [12,  0],
   ],
   curve: \lin,
 );
@@ -163,7 +164,11 @@ b = Env.pairs(
     decay: 3,
   ])),
   10, Pgroup(Pfx(~snare, \wah)),
-  15, ~melody.(2),
+  // 15, ~melody.(2),
+  15, Pfx(~melody.(2), \distort, *[
+    pregain: 50,
+    amp: 0.5,
+  ]),
   // 30, ~kick.(5),
   // 30, ~snare2,
   // 31, ~melody2,
@@ -177,17 +182,17 @@ b = Env.pairs(
   Ptpar([
     0, ~kick.(4),
     0, ~snare2,
-    1, ~melody2,
+    1, ~melody2.(),
   ]),
   Ppar([
-    // Pgroup(Pfx(~wah, \LPF, \freq, 1500, \amp, 0.1)),
     Pfx(~wah, \LPF, \freq, 1500, \amp, 0.1),
-    ~kick.(4),
+    ~kick.(3),
   ]),
+  ~roll,
   Ptpar([
     1, ~kick.(4),
     1, ~snare2,
-    0, ~melody2,
+    0, ~melody2.(lastNoteOctave: [3,4], lastNoteChord: [2,4,11]),
   ]),
   Ppar([
     ~assault.(6),
@@ -197,19 +202,25 @@ b = Env.pairs(
   Ptpar([
     0, ~kick.(4),
     0, ~snare2,
-    1, ~melody2,
+    1, ~melody2.(lastNoteOctave: [4,5], lastNoteChord: [1,4,11]),
   ]),
-  ~solo.(50),
+  Ptpar([
+    0, Pfx(~solo.(50), \echo, *[
+      dtime: 0.2,
+      decay: 3,
+    ]),
+    // 0, Pfx(~solo.(50), \echo, ),
+    1, ~longkick.(1, 10),
+  ]),
   ~roll,
   Ptpar([
-    1, ~kick.(4),
-    1, ~snare2,
-    0, ~melody2,
+    0, ~kick.(4),
+    0, ~snare2,
+    1, ~melody2.(lastNoteOctave: [2,4], lastNoteChord: [2,4,11]),
   ]),
 ]);
 ~sequence.trace.play;
 )
-
 
 
 (
@@ -224,6 +235,22 @@ b = Env.pairs(
   ])
 };
 // ~kick.().trace.play;
+)
+
+(
+~longkick = {
+  arg repeats = 5,
+      dur = 3.9;
+
+  Pbind(*[
+    instrument: \kicker,
+    dur: Pn(dur, repeats),
+    sustain: dur,
+    freq: [100, 50],
+    amp: 0.5,
+  ])
+};
+// ~longkick.().trace.play;
 )
 
 // use built-in env
@@ -313,7 +340,7 @@ Pseq([p, q, r, o], 2).play;
 )
 
 (
-SynthDef("FM2", {
+SynthDef(\FM2, {
   arg freq = 440,
       modindex = 10,
       amp = 0.1,
@@ -361,9 +388,7 @@ SynthDef(\fm, {
       atk=0.01,
       rel=3,
       pan=0,
-      out=0,
-      fx=0,
-      fxsend=(-25);
+      out=0;
   var car, mod, env, iEnv;
   
   //index of modulation
@@ -384,22 +409,40 @@ SynthDef(\fm, {
   
   car = Pan2.ar(car, pan);
 
-  //direct out/reverb send
   Out.ar(out, car);
-  Out.ar(fx, car * fxsend.dbamp);
 }).add;
 )
 
 (
 ~fm = Pbind(*[
   instrument: \FM2,
+  scale: Scale.zhi,
   degree: Pseq([1,2,3,4,5,6,7]),
   modindex: 1000,
   att: 1,
   rel: 2,
   dur: 3,
 ]);
-// ~fm.trace.play;
+~fm.trace.play;
+)
+
+(
+~fmm = Pbind(*[
+  // instrument: \FM2,
+  instrument: \fm,
+  scale: Scale.zhi,
+  degree: Pseq([1,2,3,4,5,6,7]),
+  modindex: 1000,
+  att: 1,
+  atk: 1,
+  rel: 2,
+  dur: 3,
+  mRatio: 1,
+  cRatio: 10,
+  index: 10,
+  iScale: 10,
+]);
+~fmm.trace.play;
 )
 
 (
@@ -423,28 +466,36 @@ SynthDef(\fm, {
     amp: 1,
   ])
 };
-// ~melody.().trace.play;
+~melody.().trace.play;
 )
 
 (
-~melody2 = Pbind(*[
-  instrument: \fm,
-  scale: Scale.zhi,
-  // degree: Pseq([7,5,2,3,0,[1,4,8],[1,4,9]], inf),
-  degree: Pseq([[4,7],5,2,3,0,[1,4,8],[1,4,9]], inf),
-  mRatio: 1,
-  cRatio: 1,
-  index: 10,
-  iScale: 2,
-  // cAtk: 4,
-  // cRel: -4,
-  atk: 0.1,
-  rel: Pseq([2, 2, 2, 2, 2, 3, 4], inf),
-  dur: Pseq([1, 0.5, 0.25, 0.25, 1.5, 1.25, 2], 2),
-  amp: 1,
-]);
-~melody2.trace.play;
+~melody2 = {
+  arg repeats = 2,
+      lastNoteOctave = 5,
+      lastNoteChord = [1,4,9];
+
+  Pbind(*[
+    instrument: \fm,
+    scale: Scale.zhi,
+    // degree: Pseq([7,5,2,3,0,[1,4,8],[1,4,9]], inf),
+    octave: Pseq([5, 5, 5, 5, 5, 5, lastNoteOctave], inf),
+    degree: Pseq([[4,7],5,2,3,0,[1,4,8], lastNoteChord], inf),
+    mRatio: 1,
+    cRatio: 1,
+    index: 10,
+    iScale: 2,
+    // cAtk: 4,
+    // cRel: -4,
+    atk: 0.1,
+    rel: Pseq([2, 2, 2, 2, 2, 3, 4], inf),
+    dur: Pseq([1, 0.5, 0.25, 0.25, 1.5, 1.25, 2], 2),
+    amp: 1,
+  ])
+};
+// ~melody2.(lastNoteOctave: [2,4], lastNoteChord: [2,4,11]).trace.play;
 )
+
 
 (
 ~solo = {
@@ -474,7 +525,12 @@ SynthDef(\fm, {
     // dur: Prand([1, 0.5, 0.25, 0.25, 1.5, 1.25, 2]/2, inf),
     // dur: Pwrand([0.25, 0.5, 1, 1.25, 1.5]/4, [5,4,3,2,1,1].normalizeSum, inf),
     // dur: 0.1,
-    dur: Prand([0.1, 0.2, 0.05, 0.11, 0.12], inf),
+    // dur: Prand([0.1, 0.2, 0.05, 0.11, 0.12], inf),
+    dur: Pwrand(
+      [0.1, 0.2, 0.05, 0.11, 0.12, 0.5],
+      [ 10,   8,    3,   10,   10, 1].normalizeSum,
+      inf
+    ),
     amp: 1,
   ])
 };
@@ -538,7 +594,7 @@ Scale.directory
   dur: Pn(0.05, 16),
   amp: 1,
 ]);
-~roll.trace.play;
+// ~roll.trace.play;
 )
 
 (
@@ -562,7 +618,5 @@ Scale.directory
     amp: 1,
   ])
 };
-~assault.().trace.play;
+// ~assault.().trace.play;
 )
-
-
