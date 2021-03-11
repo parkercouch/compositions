@@ -81,9 +81,7 @@ SynthDef(\fm, {
       index=1, iScale=5,
       cAtk=4, cRel=(-4),
       amp=0.2,
-      atk=0.01, rel=3,
-      pan=0,
-      out=0;
+      atk=0.01, rel=3;
   var car, mod, ampEnv, iEnv;
   
   iEnv = Env(
@@ -97,42 +95,46 @@ SynthDef(\fm, {
   mod = SinOsc.ar(freq * mRatio, mul:freq * mRatio * iEnv);
   car = SinOsc.ar(freq * cRatio + mod) * ampEnv * amp;
 
-  car = Pan2.ar(car, pan);
-  Out.ar(out, car);
+  car = Pan2.ar(car, \pan.kr(0));
+  Out.ar(\out.kr(0), car);
 }).add;
 
-SynthDef(\FM2, {
+SynthDef(\fm2, {
   arg freq = 440,
       modindex = 10,
       amp = 0.1,
-      pos = 0,
-      gate = 1,
-      att = 0.01,
+      atk = 0.01,
       rel = 0.3;
 
-  var carrier, modulator, freqdev, env, modfreq;
+  var car, mod, freqdev, env, modfreq;
 
   env = Env.asr(
-    attackTime: att,
+    attackTime: atk,
     sustainLevel: amp/1.3,
     releaseTime: rel
-  ).kr(doneAction: 2, gate: gate);
+  ).kr(doneAction: 2, gate: \gate.kr(1));
 
-  modindex = Line.kr(modindex, 1, att);
+  modindex = Line.kr(modindex, 1, atk);
   modfreq = freq / 2;
   freqdev = modfreq * modindex;
-  // modulator = Pulse.ar(freq: modfreq, mul: freqdev);
-  modulator = SinOsc.ar(freq: modfreq, mul: freqdev);
 
-  carrier = SinOsc.ar(
-    freq: [freq + modulator, freq * 1.01 + modulator]
+  mod = SinOsc.ar(freq: modfreq, mul: freqdev);
+
+  car = SinOsc.ar(
+    freq: [freq + mod, freq * 1.01 + mod]
+  ) + SinOsc.ar(
+    freq: [freq + mod, freq * 1.01 + mod]/2
   );
-  carrier = carrier + SinOsc.ar(
-    freq: [freq + modulator, freq * 1.01 + modulator]/2
+
+  car = car + FreeVerb.ar(
+    in: car,
+    mix: 0.33,
+    room: 0.75,
+    damp: 0.25,
   );
-  carrier = carrier + FreeVerb.ar(carrier, 0.33, 0.75, 0.25, 1, 0);
-  carrier = Pan2.ar(in: carrier, pos: pos, level: env);
-  Out.ar(0, carrier * 0.5);
+
+  car = Pan2.ar(car, \pan.kr(0), env);
+  Out.ar(\out.kr(0), car * 0.5);
 }).add;
 
 SynthDef(\FMGrain, {
@@ -438,11 +440,11 @@ SynthDef(\limiter, { arg out=0, thresh=0.5, slopeBelow=1.0, slopeAbove=1.0, clam
 };
 
 ~static = Pbind(*[
-  instrument: \FM2,
+  instrument: \fm2,
   scale: Scale.zhi,
   degree: Pseq([1,2,3,4,5,6,7]),
   modindex: 1000,
-  att: 1,
+  atk: 1,
   rel: 2,
   dur: 3,
 ]);
