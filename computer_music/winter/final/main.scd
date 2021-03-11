@@ -178,20 +178,43 @@ SynthDef(\echo, { arg out=0, maxdtime=0.2, dtime=0.2, decay=2, gate=1;
     var env, in;
     env = Linen.kr(gate, 0.05, 1, 0.1, 2);
     in = In.ar(out, 2);
-    XOut.ar(out, env, CombL.ar(in * env, maxdtime, dtime, decay, 1, in));
+    in = CombL.ar(
+      in: in * env,
+      maxdelaytime: maxdtime,
+      delaytime: dtime,
+      decaytime: decay,
+      mul: 1,
+      add: in,
+    );
+    XOut.ar(out, env, in);
 }, [\ir, \ir, 0.1, 0.1, 0]).add;
 
 SynthDef(\distort, { arg out=0, pregain=40, amp=0.2, gate=1;
-    var env;
+    var env, in;
     env = Linen.kr(gate, 0.05, 1, 0.1, 2);
-    XOut.ar(out, env, (In.ar(out, 2) * pregain).distort * amp);
+    in = In.ar(out, 2);
+    in = (in * pregain).distort;
+    in = in * amp;
+    XOut.ar(out, env, in);
 }, [\ir, 0.1, 0.1, 0]).add;
 
 SynthDef(\wah, { arg out=0, gate=1, amp=0.5;
     var env, in;
     env = Linen.kr(gate, 0.05, 1, 0.4, 2);
     in = In.ar(out, 2);
-    XOut.ar(out, env, RLPF.ar(in, LinExp.kr(LFNoise1.kr(0.3), -1, 1, 200, 8000), 0.1).softclip * amp);
+    in = RLPF.ar(
+      in: in,
+      freq: LinExp.kr(
+        in: LFNoise1.kr(0.3),
+        srclo: -1,
+        srchi: 1,
+        dstlo: 200,
+        dsthi: 8000,
+      ),
+      rq: 0.1,
+    );
+    in = in.softclip * amp;
+    XOut.ar(out, env, in);
 }, [\ir, 0]).add;
 
 SynthDef(\limiter, { arg out=0, thresh=0.5, slopeBelow=1.0, slopeAbove=1.0, clampTime=0.01, relaxTime=0.1, gate=1;
