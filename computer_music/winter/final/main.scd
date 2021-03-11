@@ -521,7 +521,7 @@ SynthDef(\limiter, { arg out=0, thresh=0.5, slopeBelow=1.0, slopeAbove=1.0, clam
   ])
 };
 
-~a1 = ~sectionA.();
+~a1 = ~sectionA.(endChord: [1,4,9], endOctave: 5);
 ~a2 = ~sectionA.(endChord: [2,4,11], endOctave: [3,4]);
 ~a3 = ~sectionA.(endChord: [1,4,11], endOctave: [4,5], offset: true);
 ~a4 = ~sectionA.(endChord: [2,4,11], endOctave: [2,4]);
