@@ -135,34 +135,31 @@ SynthDef(\FM2, {
   Out.ar(0, carrier * 0.5);
 }).add;
 
-SynthDef(\FMGrain, { |envbuf|
-    var envelope, freqdev, signal;
+SynthDef(\FMGrain, {
+  arg envbuf;
+  var envelope, signal;
 
-    // TODO: remove mousey
-    freqdev = WhiteNoise.kr(MouseY.kr(0, 400));
+  envelope = EnvGen.kr(
+    envelope: Env([0, 1, 0], [1, 1], \lin, 1),
+    gate: \gate.kr(1),
+    levelScale: \amp.kr(1),
+    doneAction: Done.freeSelf
+  );
 
-    envelope = EnvGen.kr(
-      envelope: Env([0, 1, 0], [1, 1], \sin, 1),
-      gate: \gate.kr(1),
-      levelScale: \amp.kr(1),
-      doneAction: Done.freeSelf
-    );
+  signal = GrainFM.ar(
+    numChannels: 2,
+    trigger: Impulse.kr(\rate.kr(10)),
+    dur: \grain_length.kr(0.1),
+    carfreq: \carfreq.kr(440) + (\freqdev.kr(100) / 2),
+    modfreq: \modfreq.kr(200),
+    index: LFNoise1.kr.range(1, 10),
+    pan: \pan.kr(0),
+    envbufnum: envbuf,
+  );
 
-    signal = GrainFM.ar(
-      numChannels: 2,
-      trigger: Impulse.kr(\rate.kr(10)),
-      dur: \grain_length.kr(0.1),
-      carfreq: \carfreq.kr(440) + (\freqdev.kr(100) / 2),
-      modfreq: \modfreq.kr(200),
-      index: LFNoise1.kr.range(1, 10),
-      pan: \pan.kr(0),
-      envbufnum: envbuf,
-    );
+  signal = signal * envelope;
 
-    // TODO: need this?
-    // signal = signal * envelope;
-
-    Out.ar(\out.kr(0), signal)
+  Out.ar(\out.kr(0), signal)
 }).add;
 )
 
@@ -380,7 +377,7 @@ SynthDef(\limiter, { arg out=0, thresh=0.5, slopeBelow=1.0, slopeAbove=1.0, clam
     grain_length: 0.51,
     dur: Pn(Pkey(\grain_length), 100),
     pan: panningEnv,
-    amp: 0.025,
+    amp: 0.5,
   ])
 };
 
@@ -506,7 +503,7 @@ SynthDef(\limiter, { arg out=0, thresh=0.5, slopeBelow=1.0, slopeAbove=1.0, clam
 
 // SECTION B
 ~b = Ppar([
-  Pfx(~waah.(), \LPF, \freq, 1500, \amp, 0.1),
+  Pfx(~waah.(), \LPF, \freq, 1500, \amp, 0.5),
   ~kick.(3),
 ]);
 
