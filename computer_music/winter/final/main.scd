@@ -56,6 +56,7 @@ z = Buffer.sendCollection(s, winenv.discretize, 1);
 SynthDef(\FMGrain, { |envbuf|
     var envelope, freqdev, signal;
 
+    // TODO: remove mousey
     freqdev = WhiteNoise.kr(MouseY.kr(0, 400));
 
     envelope = EnvGen.kr(
@@ -76,6 +77,7 @@ SynthDef(\FMGrain, { |envbuf|
       envbufnum: envbuf,
     );
 
+    // TODO: need this?
     // signal = signal * envelope;
 
     Out.ar(\out.kr(0), signal)
@@ -84,34 +86,68 @@ SynthDef(\FMGrain, { |envbuf|
 )
 
 (
-a = Env.pairs(
-  pairs: #[
-    [0, -1],
-    [2, 0],
-    [4, 1],
-    [6, 0],
-    [8, -1],
-    [10, 0],
-  ],
-  curve: \lin,
-);
+~waah = {
+  var panningEnv = Env.pairs(
+    pairs: #[
+      [0, -1],
+      [2, 0],
+      [4, 1],
+      [6, 0],
+      [8, -1],
+      [10, 0],
+    ],
+    curve: \lin,
+  );
 
+  Pbind(*[
+    instrument: \FMGrain,
+    envbuf: -1,
+    carfreq: Pseq([100, 200, 400, 800, 1600].reverse /2, 5),
+    modfreq: Pkey(\carfreq) / 4,
+    rate: Pkey(\carfreq) / 10,
+    grain_length: 0.51,
+    dur: Pn(Pkey(\grain_length), 100),
+    pan: panningEnv,
+    amp: 0.025,
+  ])
+};
+// ~waah.().trace.play;
+)
 
-~wah = Pbind(*[
-  instrument: \FMGrain,
-  envbuf: -1,
-  carfreq: Pseq([100, 200, 400, 800, 1600].reverse /2, 5),
-  modfreq: Pkey(\carfreq) / 4,
-  rate: Pkey(\carfreq) / 10,
-  grain_length: 0.51,
-  // grain_length: 0.31,
-  // dur: Pseq([1, 2, 3, 4],2),
-  dur: Pn(Pkey(\grain_length), 100),
-  pan: a.asStream,
-  amp: 0.025,
+( // SECTION B
+~b = Ppar([
+  Pfx(~waah.(), \LPF, \freq, 1500, \amp, 0.1),
+  ~kick.(3),
 ]);
-// ~wah.trace.play;
-// Pgroup(Pfx(~wah, \LPF, \freq, 1500)).trace.play;
+)
+
+( // SECTION C
+~c = Ppar([
+  ~assault.(6),
+  ~kick.(3),
+]);
+)
+
+( // SECTION D
+~d = Pseq([
+  Ptpar([
+    0, Pgroup(Pfx(Pfx(Pfx(~solo.(50), \echo, *[
+      dtime: 0.1,
+      decay: 2,
+    ]), \limiter, *~limit.(2))),
+        \LPF, \freq, 1500),
+    0, Pgroup(Pfx(Pfx(Pfx(~solo.(50), \echo, *[
+      dtime: 0.2,
+      decay: 3,
+    ]), \limiter, *~limit.(2))),
+        \LPF, \freq, 1500),
+    1, ~longkick.(1, 10),
+  ]),
+  Ptpar([
+    0, ~what,
+    1, ~longkick.(1, 10),
+  ]),
+]);
 )
 
 (
@@ -169,7 +205,7 @@ a = Env.pairs(
   4.5, ~panningKick.(),
   10, ~snareIntro,
   15, ~introMelody,
-  28, ~roll,
+  28, ~roll.(),
 ]);
 // ~intro.trace.play;
 )
@@ -177,66 +213,18 @@ a = Env.pairs(
 (
 ~sequence = Pseq([
   ~intro,
-  Ptpar([
-    0, ~kick.(4),
-    0, ~snare2,
-    1, ~melody2.(),
-    1, Pfx(~melody2.(), \limiter, *[
-      thresh: 0.8,
-      slopeBelow: 2.0,
-      slopeAbove: 1.0,
-      clampTime: 1.01,
-      relaxTime: 1.1,
-    ]),
-  ]),
-  Ppar([
-    Pfx(~wah, \LPF, \freq, 1500, \amp, 0.1),
-    ~kick.(3),
-  ]),
-  ~roll,
-  Ptpar([
-    1, ~kick.(4),
-    1, ~snare2,
-    0, ~melody2.(lastNoteOctave: [3,4], lastNoteChord: [2,4,11]),
-  ]),
-  ~roll,
-  ~roll,
-  Ppar([
-    ~assault.(6),
-    ~kick.(3),
-  ]),
-  ~roll,
-  Ptpar([
-    0, ~kick.(4),
-    0, ~snare2,
-    1, ~melody2.(lastNoteOctave: [4,5], lastNoteChord: [1,4,11]),
-  ]),
+  ~a1,
+  ~b,
+  ~roll.(),
+  ~a2,
+  ~roll.(2),
+  ~c,
+  ~roll.(),
+  ~a3,
   ~kick.(1),
-  Ptpar([
-    0, Pgroup(Pfx(Pfx(Pfx(~solo.(50), \echo, *[
-      dtime: 0.1,
-      decay: 2,
-    ]), \limiter, *~limit.(2))),
-        \LPF, \freq, 1500),
-    0, Pgroup(Pfx(Pfx(Pfx(~solo.(50), \echo, *[
-      dtime: 0.2,
-      decay: 3,
-    ]), \limiter, *~limit.(2))),
-        \LPF, \freq, 1500),
-    // 0, Pfx(~solo.(50), \echo, ),
-    // 12, ~what,
-    1, ~longkick.(1, 10),
-  ]),
-  Ptpar([
-    0, ~what,
-    1, ~longkick.(1, 10),
-  ]),
-  ~roll,
-  Ptpar([
-    0, ~kick.(4),
-    0, ~snare2,
-    1, ~melody2.(lastNoteOctave: [2,4], lastNoteChord: [2,4,11]),
-  ]),
+  ~d,
+  ~roll.(),
+  ~a4,
 ]);
 // ~sequence = Pfx(~sequence, \limiter, *~limit.(0.5));
 ~sequence.trace.play;
@@ -623,9 +611,34 @@ Scale.directory
 
 (
 ~sectionA = {
+  arg offset = false,
+      endOctave,
+      endChord;
+  var t1 = 0, t2 = 1;
 
-}
+  if (offset) {
+    t1 = 1;
+    t2 = 0;
+  };
 
+  Ptpar([
+    t1, ~kick.(4),
+    t1, ~snare2,
+    t2, ~melody.(endChord: endChord, endOctave: endOctave),
+    // 1, Pfx(~melody2.(), \limiter, *[
+    //   thresh: 0.8,
+    //   slopeBelow: 2.0,
+    //   slopeAbove: 1.0,
+    //   clampTime: 1.01,
+    //   relaxTime: 1.1,
+    // ]),
+  ])
+};
+
+~a1 = ~sectionA.();
+~a2 = ~sectionA.(endChord: [2,4,11], endOctave: [3,4]);
+~a3 = ~sectionA.(endChord: [1,4,11], endOctave: [4,5], offset: true);
+~a4 = ~sectionA.(endChord: [2,4,11], endOctave: [2,4]);
 )
 
 
@@ -747,23 +760,27 @@ Scale.directory
 )
 
 (
-~roll = Pbind(*[
-  instrument: \fm,
-  scale: Scale.zhi,
-  degree: Pseq([1,2,3], inf),
-  // freq: 1000,
-  mRatio: 10,
-  cRatio: 10,
-  index: 1000,
-  iScale: 2,
-  cAtk: 4,
-  cRel: -4,
-  atk: 0.01,
-  rel: 0.3,
-  dur: Pn(0.05, 16),
-  amp: 1,
-]);
-// ~roll.trace.play;
+~roll = {
+  arg repeats = 1;
+
+  Pbind(*[
+    instrument: \fm,
+    scale: Scale.zhi,
+    degree: Pseq([1,2,3], inf),
+    // freq: 1000,
+    mRatio: 10,
+    cRatio: 10,
+    index: 1000,
+    iScale: 2,
+    cAtk: 4,
+    cRel: -4,
+    atk: 0.01,
+    rel: 0.3,
+    dur: Pn(0.05, 16 * repeats),
+    amp: 1,
+  ])
+};
+// ~roll.().trace.play;
 )
 
 (
