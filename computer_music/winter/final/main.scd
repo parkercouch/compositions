@@ -150,16 +150,28 @@ a = Env.pairs(
 )
 
 ( // INTRO
+~snareIntro = Pgroup(Pfx(~snare.(
+  rel: 1,
+  dur: Pseq([Rest(1.5), 0.5, 1], 3),
+), \wah));
+
+~introMelody = Pgroup(Pfx(~melody.(
+  repeats: 2,
+  start: 7,
+  endChord: [2,4,6]
+), \distort, *[
+    pregain: 50,
+    amp: 0.25,
+]));
+
 ~intro = Ptpar([
   0, ~fm,
   4.5, ~panningKick.(),
   10, ~snareIntro,
-  15, Pgroup(Pfx(~melody.(2), \distort, *[
-    pregain: 50,
-    amp: 0.25,
-  ])),
+  15, ~introMelody,
+  28, ~roll,
 ]);
-~intro.trace.play;
+// ~intro.trace.play;
 )
 
 (
@@ -454,27 +466,35 @@ SynthDef(\fm, {
 )
 
 (
-~melody = {
+~introMelody = {
   arg repeats = 2;
 
   Pbind(*[
     instrument: \fm,
-    scale: Scale.zhi,
-    // degree: Pseq([7,5,2,3,0,[1,4,8],[0,3,7]], inf),
-    degree: Pseq([7,5,2,3,0,[1,4,8],[2,4,6]], inf),
+    scale: ~mainMelody.scale,
+    degree: Pseq(~mainMelody.degrees, inf),
+    // scale: Scale.zhi,
+    // degree: Pseq([7,5,2,3,0,[1,4,8],[2,4,6]], inf),
     mRatio: 1,
     cRatio: 1,
     index: 10,
     iScale: 2,
-    // cAtk: 4,
-    // cRel: -4,
     atk: 0.1,
     rel: Pseq([2, 2, 2, 2, 2, 3, 4], inf),
     dur: Pseq([1, 0.5, 0.25, 0.25, 1.5, 1.25, 4], repeats),
+    degree: Pseq(~mainMelody.degrees, inf),
     amp: 1,
   ])
 };
 ~melody.().trace.play;
+)
+
+(
+~mainMelody = (
+  scale: Scale.zhi,
+  degrees: [7,   5,    2,    3,   0, [1,4,8], [2,4,6]],
+  durs:    [1, 0.5, 0.25, 0.25, 1.5,    1.25,       4],
+);
 )
 
 (
@@ -485,10 +505,10 @@ SynthDef(\fm, {
     instrument: \fm,
     scale: Scale.zhi,
     // degree: Pseq([7,5,2,3,0,[1,4,8],[0,3,7]], inf),
-    octave: 2,
+    octave: 4,
     root: Pseq([2, 5, 1] collect: Pn(_, 7), inf),
-    // degree: Pseq([7,5,2,3,0,[1,4,8],[2,4,6]], inf),
-    degree: Pseq([2,2,2,2,0,[2,4,8],[2,4,6]], inf),
+    degree: Pseq([7,5,2,3,0,[1,4,8],[2,4,6]], inf),
+    // degree: Pseq([2,2,2,2,0,[2,4,8],[2,4,6]], inf),
     mRatio: 1,
     cRatio: 1,
     index: 1,
@@ -577,30 +597,35 @@ SynthDef(\limiter, { arg out=0, thresh=0.5, slopeBelow=1.0, slopeAbove=1.0, clam
 Scale.directory
 
 (
-~melody2 = {
+~melody = {
   arg repeats = 2,
-      lastNoteOctave = 5,
-      lastNoteChord = [1,4,9];
+      endOctave = 5,
+      endChord = [1,4,9],
+      start = [4,7];
 
   Pbind(*[
     instrument: \fm,
     scale: Scale.zhi,
-    // degree: Pseq([7,5,2,3,0,[1,4,8],[1,4,9]], inf),
-    octave: Pseq([5, 5, 5, 5, 5, 5, lastNoteOctave], inf),
-    degree: P seq([[4,7],5,2,3,0,[1,4,8], lastNoteChord], inf),
+    octave: Pseq([    5,   5,    5,    5,   5,      5, endOctave], inf),
+    degree: Pseq([start,   5,    2,    3,   0,[1,4,8],  endChord], inf),
+    rel:    Pseq([    2,   2,    2,    2,   2,      3,         4], inf),
+    dur:    Pseq([    1, 0.5, 0.25, 0.25, 1.5,   1.25,         2], 2),
     mRatio: 1,
     cRatio: 1,
     index: 10,
     iScale: 2,
-    // cAtk: 4,
-    // cRel: -4,
     atk: 0.1,
-    rel: Pseq([2, 2, 2, 2, 2, 3, 4], inf),
-    dur: Pseq([1, 0.5, 0.25, 0.25, 1.5, 1.25, 2], 2),
-    amp: 1,
+    amp: 0.8,
   ])
 };
-// ~melody2.(lastNoteOctave: [2,4], lastNoteChord: [2,4,11]).trace.play;
+// ~melody.().trace.play;
+)
+
+(
+~sectionA = {
+
+}
+
 )
 
 
