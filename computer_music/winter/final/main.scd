@@ -303,7 +303,6 @@ SynthDef(\limiter, { arg out=0, thresh=0.5, slopeBelow=1.0, slopeAbove=1.0, clam
     instrument: \fm,
     scale: Scale.zhi,
     degree: Pseq([1,2,3], inf),
-    // freq: 1000,
     mRatio: 10,
     cRatio: 10,
     index: 1000,
@@ -581,6 +580,5 @@ SynthDef(\limiter, { arg out=0, thresh=0.5, slopeBelow=1.0, slopeAbove=1.0, clam
   ~roll.(),
   ~a4,
 ]);
-// ~sequence = Pfx(~sequence, \limiter, *~limit.(0.5));
 ~sequence.trace.play;
 )
