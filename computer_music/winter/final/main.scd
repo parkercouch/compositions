@@ -183,6 +183,13 @@ b = Env.pairs(
     0, ~kick.(4),
     0, ~snare2,
     1, ~melody2.(),
+    1, Pfx(~melody2.(), \limiter, *[
+      thresh: 0.8,
+      slopeBelow: 2.0,
+      slopeAbove: 1.0,
+      clampTime: 1.01,
+      relaxTime: 1.1,
+    ]),
   ]),
   Ppar([
     Pfx(~wah, \LPF, \freq, 1500, \amp, 0.1),
@@ -194,6 +201,8 @@ b = Env.pairs(
     1, ~snare2,
     0, ~melody2.(lastNoteOctave: [3,4], lastNoteChord: [2,4,11]),
   ]),
+  ~roll,
+  ~roll,
   Ppar([
     ~assault.(6),
     ~kick.(3),
@@ -204,12 +213,24 @@ b = Env.pairs(
     0, ~snare2,
     1, ~melody2.(lastNoteOctave: [4,5], lastNoteChord: [1,4,11]),
   ]),
+  ~kick.(1),
   Ptpar([
-    0, Pfx(~solo.(50), \echo, *[
+    0, Pgroup(Pfx(Pfx(Pfx(~solo.(50), \echo, *[
+      dtime: 0.1,
+      decay: 2,
+    ]), \limiter, *~limit.(2))),
+        \LPF, \freq, 1500),
+    0, Pgroup(Pfx(Pfx(Pfx(~solo.(50), \echo, *[
       dtime: 0.2,
       decay: 3,
-    ]),
+    ]), \limiter, *~limit.(2))),
+        \LPF, \freq, 1500),
     // 0, Pfx(~solo.(50), \echo, ),
+    // 12, ~what,
+    1, ~longkick.(1, 10),
+  ]),
+  Ptpar([
+    0, ~what,
     1, ~longkick.(1, 10),
   ]),
   ~roll,
@@ -470,6 +491,105 @@ SynthDef(\fm, {
 )
 
 (
+~melody3 = {
+  arg repeats = 3;
+
+  Pbind(*[
+    instrument: \fm,
+    scale: Scale.zhi,
+    // degree: Pseq([7,5,2,3,0,[1,4,8],[0,3,7]], inf),
+    octave: 2,
+    root: Pseq([2, 5, 1] collect: Pn(_, 7), inf),
+    // degree: Pseq([7,5,2,3,0,[1,4,8],[2,4,6]], inf),
+    degree: Pseq([2,2,2,2,0,[2,4,8],[2,4,6]], inf),
+    mRatio: 1,
+    cRatio: 1,
+    index: 1,
+    iScale: 1,
+    cAtk: 100,
+    cRel: 10,
+    atk: 0.1,
+    rel: Pseq([2, 2, 2, 2, 2, 3, 4], inf),
+    dur: Pseq([1, 0.5, 0.25, 0.25, 1.5, 1.25, 4], repeats),
+    amp: 0.8,
+  ])
+};
+// ~melody3.().trace.play;
+a = ~melody3.();
+
+b = Pfx(c, \limiter, *[
+  thresh: 0.8,
+  slopeBelow: 2.0,
+  slopeAbove: 1.0,
+  clampTime: 1.01,
+  relaxTime: 1.1,
+]);
+c = Pfx(a, \LPF, \freq, 1000, \amp, 0.5);
+// a.trace.play;
+b.trace.play;
+// c.trace.play;
+)
+
+s.plotTree;
+
+(
+~what = Pfx(Pfx(~solo.(50), \echo, *[
+  // dtime: Pseq([0.2, 0.3, 1.4], inf),
+  dtime: Pwrand(
+    [0.2, 0.3, 1.4],
+    [ 10,   5,   1].normalizeSum,
+  ),
+  // dtime: 0.2,
+  decay: Pwrand(
+    [ 2, 4, 6],
+    [10, 5, 2].normalizeSum,
+  ),
+]), \limiter, *[
+  thresh: 0.2,
+  slopeBelow: 2.0,
+  slopeAbove: 1.0,
+  clampTime: 1.01,
+  relaxTime: 1.1,
+]);
+~what.trace.play;
+)
+
+(
+~limit = {
+  arg thresh=0.5;
+
+  [
+    thresh: thresh,
+    slopeBelow: 2.0,
+    slopeAbove: 1.0,
+    clampTime: 1.01,
+    relaxTime: 1.1,
+  ]
+};
+)
+
+
+(
+SynthDef(\limiter, { arg out=0, thresh=0.5, slopeBelow=1.0, slopeAbove=1.0, clampTime=0.01, relaxTime=0.1, gate=1;
+    var env, in;
+    env = Linen.kr(gate, 0.05, 1, 0.1, 2);
+    in = In.ar(out, 2);
+    in = Compander.ar(
+      in: in,
+      control: in,
+      thresh: thresh,
+      slopeBelow: slopeBelow,
+      slopeAbove: slopeAbove,
+      clampTime: clampTime,
+      relaxTime: relaxTime,
+    );
+    XOut.ar(out, env, in);
+}, [\ir, 0.5, 1.0, 1.0, 0.01, 0.1, 0]).add;
+)
+
+Scale.directory
+
+(
 ~melody2 = {
   arg repeats = 2,
       lastNoteOctave = 5,
@@ -507,6 +627,12 @@ SynthDef(\fm, {
     scale: Scale.zhi,
     // degree: Pseq([7,5,2,3,0,[1,4,8],[1,4,9]], inf),
     // degree: Pseq([[4,7],5,2,3,0,[1,4,8],[1,4,9]], inf),
+    octave: Pseq([5,6] collect: Pn(_, 15), inf),
+    root: Pwrand(
+      [ 0,1,2,[1,3]],
+      [10,2,1,3].normalizeSum,
+      inf,
+    ),
     degree: Pwrand(
       [1,2,3,4,5,6,7,8,9],
       [5,2,10,4,3,3,10,2,2].normalizeSum,
