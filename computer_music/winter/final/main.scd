@@ -84,12 +84,6 @@ SynthDef(\FMGrain, { |envbuf|
 )
 
 (
-var blah;
-blah = Env([0, 1, 0], [0.5, 0.5], \exp);
-y = Buffer.sendCollection(s, blah.discretize, 1);
-)
-
-(
 a = Env.pairs(
   pairs: #[
     [0, -1],
@@ -121,59 +115,51 @@ a = Env.pairs(
 )
 
 (
-b = Env.pairs(
-  pairs: #[
-    [ 0,  0],
-    [ 2,  1],
-    [ 4,  0],
-    [ 6, -1],
-    [ 8,  0],
-    [10,  1],
-    [12,  0],
-  ],
-  curve: \lin,
-);
+~panningKick = {
+  arg panningEnv = Env.pairs(
+        pairs: #[
+          [ 0,  0],
+          [ 2,  1],
+          [ 4,  0],
+          [ 6, -1],
+          [ 8,  0],
+          [10,  1],
+          [12,  0],
+        ],
+        curve: \lin,
+      ),
+      freq = [100, 99];
 
-~boom = Pbind(*[
-  instrument: \kicker,
-  dur: Pseq([Pn(0.25, 4), 0.5, 0.5, 1], 5),
-  freq: [100, 100],
-  pan: b,
-  amp: 1,
-]);
-// ~boom.trace.play;
-)
 
-(
-~intro = Ptpar([
-  // Pfx(~wah, \echo, *[
-  //   dtime: 0.2,
-  //   decay: 3,
-  // ]),
-  // 0, ~wah,
-  // Pgroup(Pfx(~wah, \wah)),
-  // 0, Pgroup(Pfx(~wah, \LPF, \freq, 1500, \amp, 0.1)),
-  // Pfx(~wah, \distort, *[
-  //   pregain: 20,
-  //   amp: 0.25,
-  // ]),
-  // ~boom,
-  0, ~fm,
-  4.5, Pgroup(Pfx(~boom, \echo, *[
+  var pattern = Pbind(*[
+    instrument: \kicker,
+    dur: Pseq([Pn(0.25, 4), 0.5, 0.5, 1], 5),
+    freq: freq,
+    pan: panningEnv,
+    amp: 0.25,
+  ]);
+
+  pattern = Pfx(pattern, \echo, *[
     dtime: 1.05,
     decay: 3,
-  ])),
-  10, Pgroup(Pfx(~snare, \wah)),
-  // 15, ~melody.(2),
-  15, Pfx(~melody.(2), \distort, *[
+  ]);
+
+  Pgroup(pattern)
+};
+~panningKick.(freq: [100, 99]).trace.play;
+)
+
+( // INTRO
+~intro = Ptpar([
+  0, ~fm,
+  4.5, ~panningKick.(),
+  10, ~snareIntro,
+  15, Pgroup(Pfx(~melody.(2), \distort, *[
     pregain: 50,
-    amp: 0.5,
-  ]),
-  // 30, ~kick.(5),
-  // 30, ~snare2,
-  // 31, ~melody2,
+    amp: 0.25,
+  ])),
 ]);
-// ~intro.trace.play;
+~intro.trace.play;
 )
 
 (
@@ -240,6 +226,7 @@ b = Env.pairs(
     1, ~melody2.(lastNoteOctave: [2,4], lastNoteChord: [2,4,11]),
   ]),
 ]);
+// ~sequence = Pfx(~sequence, \limiter, *~limit.(0.5));
 ~sequence.trace.play;
 )
 
@@ -600,7 +587,7 @@ Scale.directory
     scale: Scale.zhi,
     // degree: Pseq([7,5,2,3,0,[1,4,8],[1,4,9]], inf),
     octave: Pseq([5, 5, 5, 5, 5, 5, lastNoteOctave], inf),
-    degree: Pseq([[4,7],5,2,3,0,[1,4,8], lastNoteChord], inf),
+    degree: P seq([[4,7],5,2,3,0,[1,4,8], lastNoteChord], inf),
     mRatio: 1,
     cRatio: 1,
     index: 10,
@@ -666,9 +653,40 @@ Scale.directory
 Scale.directory
 
 (
+~snare = {
+  arg rel = 2,
+      repeats = 5, 
+      dur = Pseq([Rest(1), 1], repeats);
+
+  Pbind(*[
+    instrument: \fm,
+    freq: 1000,
+    mRatio: 10,
+    cRatio: 1000,
+    index: 100,
+    iScale: 2,
+    cAtk: 4,
+    cRel: -4,
+    atk: 0.01,
+    // rel: 1,
+    rel: rel,
+    // dur: Pseq([Rest(1.5), 0.5, 1], 3),
+    dur: dur,
+    amp: 1,
+  ])
+};
+// ~snare.().trace.play;
+~snareIntro = Pgroup(Pfx(~snare.(
+  rel: 1,
+  dur: Pseq([Rest(1.5), 0.5, 1], 3),
+), \wah));
+// ~snare.().trace.play;
+// ~snareIntro.trace.play;
+)
+
+(
 ~snare = Pbind(*[
   instrument: \fm,
-  // degree: Pseq([1,2,3,4,5,6,7]),
   freq: 1000,
   mRatio: 10,
   cRatio: 1000,
@@ -681,7 +699,7 @@ Scale.directory
   dur: Pseq([Rest(1.5), 0.5, 1], 3),
   amp: 1,
 ]);
-// ~snare.trace.play;
+~snare.trace.play;
 )
 
 (
