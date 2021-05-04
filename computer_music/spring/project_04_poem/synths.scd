@@ -22,6 +22,37 @@ SynthDef(\sawpulse, { |out, freq = 440, gate = 0.5, plfofreq = 6, mw = 0, ffreq 
 }).add;
 synths[\list].add(\sawpulse);
 
+~voices = 10;
+~chord = { |range = 1.0|
+    ~voices collect: { exprand(180 / range, 260 * range) }
+};
+SynthDef(\presence, {
+  arg distort_ratio = 1.4,
+      lo = 1,
+      hi = 1;
+
+  var env, snd, chord;
+
+  env = EnvGen.kr(
+    envelope: Env.adsr(15, \decay.kr(10), 1, 10, curve: \sine),
+    gate: \gate.kr(1),
+    doneAction: Done.freeSelf,
+  );
+
+  chord = \freq.kr(~chord.value, \lag.kr(10));
+
+  snd = chord collect: { |f|
+    f = f * LFNoise2.kr( rrand(0.3, 0.8) ).exprange(lo, hi);
+    BLowPass.ar(SinOsc.ar(f), f, 0.6);
+  };
+
+  snd = (snd * distort_ratio).clip(-1, 1);
+
+  snd = Splay.ar(snd, \splay.kr(0.8)) * env * \amp.kr(0.5);
+  Out.ar(0, snd);
+}).add;
+synths[\list].add(\presence);
+
 SynthDef(\LPF, { arg out=0, gate=1, freq=1000, rq=1.0, amp=0.5;
     var env, snd;
     env = Linen.kr(gate, 0.05, 1, 0.1, 2);

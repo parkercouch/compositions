@@ -20,7 +20,7 @@ patterns[\generators] = IdentityDictionary();
       dur         = 0.2,
       line        = "i am here";
 
-  Pseq([
+  Ppar([
     Pbind(*[
       instrument: synth,
       octave: octave,
@@ -30,6 +30,16 @@ patterns[\generators] = IdentityDictionary();
       degree: Pseq(line.ascii collect: map_degrees, 1),
       dur: dur,
       amp: amp,
+    ]),
+    Pbind(*[
+      instrument: \presence,
+      octave: 0,
+      root: root,
+      scale: misc[\scales][\et19],
+      degree: line.ascii,
+      dur: Pxrand([50,70,20], 1),
+      amp: amp/2,
+      print: Pfunc({line.postln}),
     ]),
   ], length)
 };
