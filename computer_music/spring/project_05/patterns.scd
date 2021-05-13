@@ -19,6 +19,7 @@ patterns[\generators] = IdentityDictionary();
       map_degrees = {|n| n},
       dur         = 1,
       legato      = 0.5,
+      modindex    = 10,
       seq         = {[19,17,10,20,15,13,12,14,11,18,16]};
 
   Ppar([
@@ -31,6 +32,7 @@ patterns[\generators] = IdentityDictionary();
       degree: Pseq(seq.value collect: map_degrees, 1),
       dur: dur,
       amp: amp,
+      modindex: modindex, // TODO: how to make this dynamic?
     ]),
   ], length)
 };

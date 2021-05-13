@@ -53,6 +53,45 @@ SynthDef(\presence, {
 }).add;
 synths[\list].add(\presence);
 
+SynthDef(\fm2, {
+  arg freq = 440,
+      modindex = 10,
+      amp = 0.1,
+      atk = 0.01,
+      rel = 0.3;
+
+  var car, mod, freqdev, env, modfreq;
+
+  env = Env.asr(
+    attackTime: atk,
+    sustainLevel: amp/1.3,
+    releaseTime: rel
+  ).kr(doneAction: 2, gate: \gate.kr(1));
+
+  modindex = Line.kr(modindex, 1, atk);
+  modfreq = freq / 2;
+  freqdev = modfreq * modindex;
+
+  mod = SinOsc.ar(freq: modfreq, mul: freqdev);
+
+  car = SinOsc.ar(
+    freq: [freq + mod, freq * 1.01 + mod]
+  ) + SinOsc.ar(
+    freq: [freq + mod, freq * 1.01 + mod]/2
+  );
+
+  car = car + FreeVerb.ar(
+    in: car,
+    mix: 0.33,
+    room: 0.75,
+    damp: 0.25,
+  );
+
+  car = Pan2.ar(car, \pan.kr(0), env);
+  Out.ar(\out.kr(0), car * 0.5);
+}).add;
+synths[\list].add(\fm2);
+
 SynthDef(\LPF, { arg out=0, gate=1, freq=1000, rq=1.0, amp=0.5;
     var env, snd;
     env = Linen.kr(gate, 0.05, 1, 0.1, 2);
