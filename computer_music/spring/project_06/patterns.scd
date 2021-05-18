@@ -9,36 +9,44 @@ var misc = "./misc.scd".loadRelative[0];
 var patterns = IdentityDictionary();
 patterns[\generators] = IdentityDictionary();
 
-~phrase = {
-  arg length      = 1,
-      root        = 3,
-      scale       = misc[\scales][\wcAlpha],
-      amp         = 0.25,
-      synth       = \sawpulse,
-      octave      = [2,3],
-      map_degrees = {|n| n},
-      dur         = 1,
-      legato      = 0.5,
-      modindex    = 10,
-      seq         = {[19,17,10,20,15,13,12,14,11,18,16]};
-
-  Ppar([
-    PmonoArtic(*[
-      synth,
-      octave: octave,
-      root: root,
-      scale: scale,
-      legato: legato,
-      degree: Pseq(seq.value collect: map_degrees, 1),
-      dur: dur,
-      amp: amp,
-      modindex: modindex, // TODO: how to make this dynamic?
-    ]),
-  ], length)
+~left = {|scale = 1|
+  Pbind(*[
+    instrument: \chord7env,
+    freq:  Pseq([430,  210, 100,  30,   40, 20]*scale, 1),
+    range: Pseq([100, 1000,  50, 100, 1000, 50], 1),
+    dur:   Pseq([ 10,    5,  15,  20,   20, 20], 1),
+    delta: Pseq([ 5,   2.5, 7.5,  10,   10, 10], 1),
+    pan: -1,
+  ])
 };
+patterns[\left] = ~left;
 
-patterns[\phrase] = ~phrase;
-patterns[\generators][\phrase] = ~phrase;
+~right = {|scale=1|
+  Pbind(*[
+    instrument: \bands2,
+    f1:     Pseq([440,  220, 110,  40,   20, 10], 1),
+    range1: Pseq([100, 1000,  50, 100, 1000, 50], 1),
+    f2:     Pseq([540,  320, 210,  40,   20, 10], 1),
+    range2: Pseq([100, 1000,  50, 100, 1000, 50], 1),
+    dur:    Pseq([ 10,   10,  10,  20,   20, 20], 1),
+    delta:  Pseq([  5,    5,   5,  10,   10, 10], 1),
+    // dur:    Pseq([ 10,   10,  10,  20,   20, 20], 1),
+    // delta:  Pseq([  5,    5,   5,  10,   10, 10], 1),
+    pan: 1,
+  ])
+};
+patterns[\right] = ~right;
+
+~spread = {|seq=(~left), time_diff=0.5, scale_diff=1, layers=4|
+  var pairs = (0..layers) collect: {|n, i|
+    [i*time_diff, seq.(i*scale_diff)] 
+  };
+
+  var flattened = pairs.reshape(layers*2);
+
+  Ptpar(flattened, 1)
+};
+patterns[\spread] = ~spread;
 
 patterns
 )

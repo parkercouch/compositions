@@ -21,50 +21,20 @@ s.waitForBoot({
   ~patterns = "./patterns.scd".loadRelative[0];
   ~misc = "./misc.scd".loadRelative[0];
 
-  ~clock = TempoClock(30/60);
-
+  ~clock = TempoClock(1);
+  
   ~seq = Ppar([
     // LEFT
     Pseq([
-      Pbind(*[
-        instrument: \chord7env,
-        freq:  Pseq([430,  210, 100], 1),
-        range: Pseq([100, 1000,  50], 1),
-        dur:   Pseq([ 10,    5,  15], 1),
-        delta: Pseq([ 5,   2.5, 7.5], 1),
-        pan: -1,
-      ]),
-      Pbind(*[
-        instrument: \chord7env,
-        freq:  Pseq([ 30,   40, 20], 1),
-        range: Pseq([100, 1000, 50], 1),
-        dur: 20,
-        delta: 10,
-        pan: -1,
-      ]),
+      ~patterns[\spread].(seq: ~patterns[\left], time_diff:  0.5, scale_diff:   1, layers: 4),
+      ~patterns[\spread].(seq: ~patterns[\left], time_diff: 0.25, scale_diff: 1.5, layers: 5),
+      ~patterns[\spread].(seq: ~patterns[\left], time_diff:  1.5, scale_diff: 0.5, layers: 6),
     ], 1),
     // RIGHT
     Pseq([
-      Pbind(*[
-        instrument: \bands2,
-        f1:     Pseq([440,  220, 110], 1),
-        range1: Pseq([100, 1000,  50], 1),
-        f2:     Pseq([540,  320, 210], 1),
-        range2: Pseq([100, 1000,  50], 1),
-        dur: 10,
-        delta: 5,
-        pan: 1,
-      ]),
-      Pbind(*[
-        instrument: \bands2,
-        f1: Pseq([40, 20, 10], 1),
-        range1: Pseq([100, 1000, 50], 1),
-        f2: Pseq([40, 20, 10], 1),
-        range2: Pseq([100, 1000, 50], 1),
-        dur: 20,
-        delta: 10,
-        pan: 1,
-      ]),
+      ~patterns[\spread].(seq: ~patterns[\right], time_diff:  0.5, scale_diff:   1, layers: 4),
+      ~patterns[\spread].(seq: ~patterns[\right], time_diff: 0.25, scale_diff: 1.5, layers: 5),
+      ~patterns[\spread].(seq: ~patterns[\right], time_diff:  1.5, scale_diff: 0.5, layers: 6),
     ], 1),
   ], 1);
 
