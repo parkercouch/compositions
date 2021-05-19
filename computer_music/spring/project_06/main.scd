@@ -67,7 +67,7 @@ s.waitForBoot({
     Pseq([
       ~patterns[\spread].(seq: ~patterns[\right], time_diff:  0.5, scale_diff:   1, layers: 4),
       ~patterns[\spread].(seq: ~patterns[\right], time_diff:  1.5, scale_diff: 0.5, layers: 8),
-      ~patterns[\spread].(seq: ~patterns[\right], time_diff: 0.25, scale_diff:  13, layers: 5),
+      ~patterns[\spread].(seq: ~patterns[\right], time_diff: 0.25, scale_diff:  13, layers: 13),
     ], 1),
   ], 1);
 
