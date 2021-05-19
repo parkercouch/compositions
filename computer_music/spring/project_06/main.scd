@@ -2,7 +2,40 @@
 // -------------------------- Project 6 ---------------------------- //
 // ----------------------------------------------------------------- //
 
+Timbre, or Yawning Cats
 
+Using the models of SynthDefs() we've discussed in the class (available
+  in Modules for week 7, Monday and Thursday.)
+
+    1. chord3cents()
+    2. chord7cents()
+    3. chord7range()
+    4. chord7env()
+    and
+    5. bands2()
+
+build TWO sequences of events, one for the left the other for the right
+channels.
+
+Use "longer" durations than you've probably used for projects in the
+past: not for "notes" but for "yawning cats".  Imagine cats that yawn
+--- the fastest might be 5 seconds, the slowest might be 20 seconds.
+
+Let each sequence be different in number of parts and durations from one
+another:
+
+  seq 1 : 5 + 10 + 5 + 20 + 5 + 30 + 5 + 20 + 5 + 10 (sum: 90 seconds, 10 parts)
+  seq 2 : 11 + 10 + 13 + 10 + 15 + 10 + 17 + 10 (sum: 96 seconds, 8 parts)
+
+Decide on 
+    1. the sequence of SynthDefs for each
+    2. the fundamental frequency for each (or 2 frequencies for bands)
+
+If you can, build SynthDefs with three and four bands.  Suggestion for
+those who were in the class winter quarter: use frequency modulation
+instead of additive synthesis to create the different bands.
+
+Have fun!
 
 // ----------------------------------------------------------------- //
 // -------------------------- Setup -------------------------------- //
