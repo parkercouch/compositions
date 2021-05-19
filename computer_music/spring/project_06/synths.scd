@@ -281,7 +281,7 @@ SynthDef.new(\bands2,
 
 		// mix the two bands together and send to output
 		signal = (mix1 * band1) + (mix2 * band2) ;
-		signal = Pan2.ar(signal, 0) ;
+		signal = Pan2.ar(signal, \pan.kr(0)) ;
 		Out.ar(0, signal) ;
 
 	}
