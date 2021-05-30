@@ -165,6 +165,8 @@ SynthDef(\FMGrain, {
 }).add;
 )
 
+Synth(\echo, )
+
 ( // Effects
 SynthDef(\LPF, { arg out=0, gate=1, freq=1000, rq=1.0, amp=0.5;
     var env, snd;
@@ -272,6 +274,7 @@ SynthDef(\limiter, { arg out=0, thresh=0.5, slopeBelow=1.0, slopeAbove=1.0, clam
     iScale: 2,
     atk: 0.1,
     amp: 0.8,
+    strum: 0.5,
   ])
 };
 
@@ -415,15 +418,18 @@ SynthDef(\limiter, { arg out=0, thresh=0.5, slopeBelow=1.0, slopeAbove=1.0, clam
           [ 8,  0],
           [10,  1],
           [12,  0],
+          [14,  -1],
+          [16,  0],
         ],
         curve: \lin,
       ),
-      freq = [100, 99];
+      freq = [100, 99],
+      length = 5;
 
 
   var pattern = Pbind(*[
     instrument: \kicker,
-    dur: Pseq([Pn(0.25, 4), 0.5, 0.5, 1], 5),
+    dur: Pseq([Pn(0.25, 4), 0.5, 0.5, 1], length),
     freq: freq,
     pan: panningEnv,
     amp: 0.25,
@@ -494,8 +500,9 @@ SynthDef(\limiter, { arg out=0, thresh=0.5, slopeBelow=1.0, slopeAbove=1.0, clam
 ]));
 
 ~intro = Ptpar([
-  0, ~static,
-  4.5, ~panningKick.(),
+  5, ~static,
+  // 4.5, ~panningKick.(),
+  0, ~panningKick.(length: 6),
   10, ~snareIntro,
   15, ~introMelody,
   28, ~roll.(),
@@ -515,7 +522,7 @@ SynthDef(\limiter, { arg out=0, thresh=0.5, slopeBelow=1.0, slopeAbove=1.0, clam
 
   Ptpar([
     t1, ~kick.(4),
-    t1, ~snare2,
+    t1, ~snare.(),
     t2, ~melody.(endChord: endChord, endOctave: endOctave),
   ])
 };
@@ -582,3 +589,10 @@ SynthDef(\limiter, { arg out=0, thresh=0.5, slopeBelow=1.0, slopeAbove=1.0, clam
 ]);
 ~sequence.trace.play;
 )
+
+
+~d.trace.play
+~roll.(3).trace.play
+~c.trace.play
+~a1.trace.play
+~a2.trace.play
