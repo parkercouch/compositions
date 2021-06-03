@@ -34,15 +34,19 @@ s.reboot;
 s.waitForBoot({
   ~synths = "./synths.scd".loadRelative[0];
   ~patterns = "./patterns.scd".loadRelative[0];
+  ~osc = "./osc.scd".loadRelative[0];
   ~misc = "./misc.scd".loadRelative[0];
 
   ~clock = TempoClock(1);
 
   ~socket = NetAddr.new("127.0.0.1",NetAddr.langPort);
+  ~rustySocket = NetAddr("127.0.0.1", 8080);
 
   ~socket.sendMsg("/ding");
 });
 )
+
+~rustySocket.sendMsg("/start", 2);
 
 ~socket.sendMsg("/blah", 1, 5);
 ~socket.sendMsg("/piercing", 3, 10);
@@ -72,7 +76,7 @@ s.waitForBoot({
     "/home/parker/compositions/rust/spring_final/target/%/final_composition".format(target),
     "--wait=%".format(wait),
     "--notes=%".format(notes),
-    "--port=%".format(NetAddr.langPort),
+    "--send_port=%".format(NetAddr.langPort),
   ], "r");
   pipe.close;
 };
