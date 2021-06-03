@@ -3,9 +3,54 @@
 // ----------------------------------------------------------------- //
 
 (
+// var patterns = "./patterns.scd".loadRelative[0];
+
 var synths = IdentityDictionary();
 synths[\list] = Set();
+synths[\osc] = Set();
 synths[\functions] = IdentityDictionary();
+
+OSCdef(\ding, {|msg, time, addr, recvPort|
+  var scale;
+  [msg, time, addr, recvPort].postln;
+
+  // Extract optional scale parameter from message
+  if (msg[1].isNumber) {scale = msg[1]} {scale = 1};
+
+  {
+    Pulse.ar(10 * scale, rrand(0.01,0.5), 0.3)
+    * Env.perc.ar(doneAction:2)
+    !2
+  }.play
+}, '/ding');
+
+synths[\osc].add(\ding);
+
+OSCdef(\blah, {|msg, time, addr, recvPort|
+  var scale;
+  [msg, time, addr, recvPort].postln;
+
+  // Extract optional scale parameter from message
+  if (msg[1].isNumber) {scale = msg[1]} {scale = 1};
+
+  // patterns[\blah].(scale).play
+  ~blah.(scale).play
+}, '/blah');
+
+synths[\osc].add(\blah);
+
+OSCdef(\piercing, {|msg, time, addr, recvPort|
+  var scale;
+  [msg, time, addr, recvPort].postln;
+
+  // Extract optional scale parameter from message
+  if (msg[1].isNumber) {scale = msg[1]} {scale = 1};
+
+  // patterns[\pierce].(scale).play
+  ~piercing.(scale).play
+}, '/piercing');
+
+synths[\osc].add(\piercing);
 
 // From sccode.org
 SynthDef(\sawpulse, { |out, freq = 440, gate = 0.5, plfofreq = 6, mw = 0, ffreq = 2000, rq = 0.3, freqlag = 0.05, amp = 1|

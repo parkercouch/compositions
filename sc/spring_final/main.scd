@@ -19,7 +19,6 @@ Flowing between consonance/dissonance
 How to not be random:
 Have a character come back
 
-
 // ----------------------------------------------------------------- //
 // -------------------------- Setup -------------------------------- //
 // ----------------------------------------------------------------- //
@@ -39,21 +38,14 @@ s.waitForBoot({
 
   ~clock = TempoClock(1);
 
-  // set address
   ~socket = NetAddr.new("127.0.0.1",NetAddr.langPort);
 
-  OSCdef(\dinger, {|msg, time, addr, recvPort|
-    var scale = 1;
-    [msg, time, addr, recvPort].postln;
-
-    if (msg[1].isNumber) {scale = msg[1]} {};
-
-    {Pulse.ar(10*scale,rrand(0.01,0.5),0.3)!2 * EnvGen.ar(Env.perc,doneAction:2)}.play
-  }, '/ding');
-  // Send a message with no parameters. It'll trigger the function within the OSCdef.
   ~socket.sendMsg("/ding");
 });
 )
+
+~socket.sendMsg("/blah", 1, 5);
+~socket.sendMsg("/piercing", 3, 10);
 
 ~socket.sendMsg("/ding", 1);
 ~socket.sendMsg("/ding", 10);
@@ -64,13 +56,20 @@ s.waitForBoot({
 ~socket.sendMsg("/ding", 1000);
 ~socket.sendMsg("/ding", 1001);
 
+(
+~rustySocket = NetAddr("127.0.0.1", 8080);
+)
+
+~rustySocket.sendMsg("/dong", 100);
+~rustySocket.sendMsg("/dong", 10);
+
 // TODO: This does not run consistently... not sure why. Need to figure out how the Pipe actually works
 // It's like it has trouble even starting the binary.
 // Then after running I have to restart the server to get any osc message to work
 (
 ~trigger = {|target="debug", wait=50, notes=50|
   var pipe = Pipe.argv([
-    "/home/parker/code/rust/final_composition/target/%/final_composition".format(target),
+    "/home/parker/compositions/rust/spring_final/target/%/final_composition".format(target),
     "--wait=%".format(wait),
     "--notes=%".format(notes),
     "--port=%".format(NetAddr.langPort),
