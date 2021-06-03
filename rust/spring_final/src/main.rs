@@ -3,6 +3,7 @@ use async_osc::{OscPacket, OscType};
 use async_std::task;
 use futures::StreamExt;
 use spring_final::actors::blah::{Blah, Blaher};
+use spring_final::actors::cont::{Continue, Continuer};
 use spring_final::actors::ding::{Ding, Dinger};
 use spring_final::actors::pierce::{Pierce, Piercer};
 use spring_final::osc::create_osc_connection_pool;
@@ -47,8 +48,10 @@ async fn main() -> anyhow::Result<()> {
     let pierce_addr = Supervisor::start(move || Piercer::new(osc_sender.clone())).await?;
     let osc_sender = osc_sender_pool.clone();
     let blah_addr = Supervisor::start(move || Blaher::new(osc_sender.clone())).await?;
+    let osc_sender = osc_sender_pool.clone();
+    let continue_addr = Supervisor::start(move || Continuer::new(osc_sender.clone())).await?;
 
-    // send
+    // test send
     for i in 1..=opt.notes {
         task::sleep(std::time::Duration::from_millis(opt.wait)).await;
         ding_addr.send(Ding(i))?;
@@ -61,6 +64,8 @@ async fn main() -> anyhow::Result<()> {
     blah_addr.send(Blah::new(0.5, 15))?;
 
     // recv loop - TODO: move into other thread or maybe it's own actor?
+    //  realizing that there probably needs to be an App type to hold all the addresses
+    //  or maybe use DI via `shaku` crate. Explore this to clean this up.
     while let Some(packet) = osc_listener.next().await {
         let (packet, peer_addr) = packet?;
         eprintln!("Receive from {}: {:?}", peer_addr, packet);
@@ -75,16 +80,18 @@ async fn main() -> anyhow::Result<()> {
                     eprintln!("Dinging: {}", scale * 2);
                     ding_addr.send(Ding(scale * 2))?;
                 }
-                ("/start", &[OscType::Int(seed)]) => {
+                ("/start", &[OscType::Int(seed), OscType::Int(other)]) => {
                     let ding_addr = ding_addr.clone();
                     let pierce_addr = pierce_addr.clone();
+                    let continue_addr = continue_addr.clone();
                     spawn(async move {
                         eprintln!("Start: {}", seed);
-                        pierce_addr.send(Pierce::new(seed / 2, seed * 2)).unwrap();
+                        pierce_addr.send(Pierce::new(seed / 2, other * 2)).unwrap();
                         for i in 1..=seed * 2 {
-                            task::sleep(std::time::Duration::from_millis(seed as u64)).await;
+                            task::sleep(std::time::Duration::from_millis(other as u64)).await;
                             ding_addr.send(Ding(i)).unwrap();
                         }
+                        continue_addr.send(Continue::new(seed - 2, other + 1)).unwrap();
                     });
                 }
                 _ => {}

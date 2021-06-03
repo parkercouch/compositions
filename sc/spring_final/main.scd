@@ -39,48 +39,21 @@ s.waitForBoot({
 
   ~clock = TempoClock(1);
 
-  ~socket = NetAddr.new("127.0.0.1",NetAddr.langPort);
-  ~rustySocket = NetAddr("127.0.0.1", 8080);
-
-  ~socket.sendMsg("/ding");
+  ~misc[\etc][\rustySocket].sendMsg("/start", 20, 5);
+  5.wait;
+  ~misc[\etc][\rustySocket].sendMsg("/start", 33, 13);
 });
 )
-
-~rustySocket.sendMsg("/start", 2);
-~rustySocket.sendMsg("/start", 200);
-~rustySocket.sendMsg("/start", 10);
-
-(
-~socket = NetAddr.new("127.0.0.1",NetAddr.langPort);
-~rustySocket = NetAddr("127.0.0.1", 8080);
-)
-
-~socket.sendMsg("/blah", 5, 50);
-~socket.sendMsg("/piercing", 30, 10);
-~socket.sendMsg("/piercing", 0.03, 10);
-
-~socket.sendMsg("/ding", 1);
-~socket.sendMsg("/ding", 10);
-~socket.sendMsg("/ding", 20);
-~socket.sendMsg("/ding", 100);
-~socket.sendMsg("/ding", 101);
-~socket.sendMsg("/ding", 102);
-~socket.sendMsg("/ding", 1000);
-~socket.sendMsg("/ding", 1001);
-
-(
-~rustySocket = NetAddr("127.0.0.1", 8080);
-)
-
-~rustySocket.sendMsg("/dong", 100);
-~rustySocket.sendMsg("/dong", 10);
 
 // TODO: This does not run consistently... not sure why. Need to figure out how the Pipe actually works
 // It's like it has trouble even starting the binary.
 // Then after running I have to restart the server to get any osc message to work
+// Another idea: have the rust app start SC instead of the other way around?
+//                all the sc code needs to do is boot up, load synths, then wait for osc messages
 (
-~trigger = {|target="debug", wait=50, notes=50|
+~startApp = {|target="debug", wait=50, notes=50|
   var pipe = Pipe.argv([
+    // TODO: use relative path
     "/home/parker/compositions/rust/spring_final/target/%/final_composition".format(target),
     "--wait=%".format(wait),
     "--notes=%".format(notes),
@@ -88,21 +61,4 @@ s.waitForBoot({
   ], "r");
   pipe.close;
 };
-)
-
-(
-~trigger.(wait: 1000, notes:  10);
-)
-
-~trigger.(wait:  10, notes: 100);
-~trigger.(wait:  50, notes:   5);
-
-(
-p = Pipe.argv([
-  "/home/parker/code/rust/final_composition/target/debug/final_composition",
-  "--wait=50",
-  "--notes=50",
-  "--port=%".format(NetAddr.langPort),
-], "r");
-p.close;
 )
