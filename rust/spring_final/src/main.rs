@@ -2,6 +2,7 @@ use async_osc::prelude::*;
 use async_osc::{OscPacket, OscType};
 use async_std::task;
 use futures::StreamExt;
+use spring_final::actors::blah::{Blah, Blaher};
 use spring_final::actors::ding::{Ding, Dinger};
 use spring_final::actors::pierce::{Pierce, Piercer};
 use spring_final::osc::create_osc_connection_pool;
@@ -44,6 +45,8 @@ async fn main() -> anyhow::Result<()> {
     let ding_addr = Supervisor::start(move || Dinger::new(osc_sender.clone())).await?;
     let osc_sender = osc_sender_pool.clone();
     let pierce_addr = Supervisor::start(move || Piercer::new(osc_sender.clone())).await?;
+    let osc_sender = osc_sender_pool.clone();
+    let blah_addr = Supervisor::start(move || Blaher::new(osc_sender.clone())).await?;
 
     // send
     for i in 1..=opt.notes {
@@ -53,6 +56,9 @@ async fn main() -> anyhow::Result<()> {
 
     task::sleep(std::time::Duration::from_millis(opt.wait)).await;
     pierce_addr.send(Pierce::new(3, 20))?;
+
+    task::sleep(std::time::Duration::from_secs(2)).await;
+    blah_addr.send(Blah::new(0.5, 15))?;
 
     // recv loop - TODO: move into other thread or maybe it's own actor?
     while let Some(packet) = osc_listener.next().await {
@@ -70,8 +76,16 @@ async fn main() -> anyhow::Result<()> {
                     ding_addr.send(Ding(scale * 2))?;
                 }
                 ("/start", &[OscType::Int(seed)]) => {
-                    eprintln!("Start: {}", seed);
-                    pierce_addr.send(Pierce::new(seed / 2, seed * 2))?;
+                    let ding_addr = ding_addr.clone();
+                    let pierce_addr = pierce_addr.clone();
+                    spawn(async move {
+                        eprintln!("Start: {}", seed);
+                        pierce_addr.send(Pierce::new(seed / 2, seed * 2)).unwrap();
+                        for i in 1..=seed * 2 {
+                            task::sleep(std::time::Duration::from_millis(seed as u64)).await;
+                            ding_addr.send(Ding(i)).unwrap();
+                        }
+                    });
                 }
                 _ => {}
             },

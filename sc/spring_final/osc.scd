@@ -6,8 +6,8 @@
 var patterns = "./patterns.scd".loadRelative[0];
 
 var osc = IdentityDictionary();
-synths[\list] = Set();
-synths[\functions] = IdentityDictionary();
+osc[\list] = Set();
+osc[\functions] = IdentityDictionary();
 
 OSCdef(\ding, {|msg, time, addr, recvPort|
   var scale;

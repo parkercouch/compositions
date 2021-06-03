@@ -47,9 +47,17 @@ s.waitForBoot({
 )
 
 ~rustySocket.sendMsg("/start", 2);
+~rustySocket.sendMsg("/start", 200);
+~rustySocket.sendMsg("/start", 10);
 
-~socket.sendMsg("/blah", 1, 5);
-~socket.sendMsg("/piercing", 3, 10);
+(
+~socket = NetAddr.new("127.0.0.1",NetAddr.langPort);
+~rustySocket = NetAddr("127.0.0.1", 8080);
+)
+
+~socket.sendMsg("/blah", 5, 50);
+~socket.sendMsg("/piercing", 30, 10);
+~socket.sendMsg("/piercing", 0.03, 10);
 
 ~socket.sendMsg("/ding", 1);
 ~socket.sendMsg("/ding", 10);
