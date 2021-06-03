@@ -25,7 +25,7 @@ impl Handler<Continue> for Continuer {
     async fn handle(&mut self, _ctx: &mut Context<Self>, cont: Continue) {
         let socket = self.pool.get().await.expect("osc connection pool failed");
         socket
-            .send(("/continue", (cont.seed, cont.other,)))
+            .send(("/continue", (cont.seed, cont.other)))
             .await
             .expect("couldn't send osc message");
     }
