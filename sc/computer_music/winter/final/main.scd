@@ -371,6 +371,7 @@ SynthDef(\limiter, { arg out=0, thresh=0.5, slopeBelow=1.0, slopeAbove=1.0, clam
   ])
 };
 
+
 ~what = Pfx(Pfx(~solo.(50), \echo, *[
   dtime: Pwrand(
     [0.2, 0.3, 1.4],
@@ -500,9 +501,19 @@ SynthDef(\limiter, { arg out=0, thresh=0.5, slopeBelow=1.0, slopeAbove=1.0, clam
 ]));
 
 ~intro = Ptpar([
+<<<<<<< HEAD:sc/computer_music/winter/final/main.scd
   5, ~static,
   // 4.5, ~panningKick.(),
   0, ~panningKick.(length: 6),
+||||||| parent of 36a31b5 (add some stuff):computer_music/winter/final/main.scd
+  0, ~static,
+  4.5, ~panningKick.(),
+=======
+  0, ~static,
+  4.5, ~panningKick.(),
+  // 5, ~static,
+  // 0, ~panningKick.(length: 6),
+>>>>>>> 36a31b5 (add some stuff):computer_music/winter/final/main.scd
   10, ~snareIntro,
   15, ~introMelody,
   28, ~roll.(),
@@ -522,7 +533,14 @@ SynthDef(\limiter, { arg out=0, thresh=0.5, slopeBelow=1.0, slopeAbove=1.0, clam
 
   Ptpar([
     t1, ~kick.(4),
+<<<<<<< HEAD:sc/computer_music/winter/final/main.scd
     t1, ~snare.(),
+||||||| parent of 36a31b5 (add some stuff):computer_music/winter/final/main.scd
+    t1, ~snare2,
+=======
+    // t1, ~snare2,
+    t1, ~snare.(),
+>>>>>>> 36a31b5 (add some stuff):computer_music/winter/final/main.scd
     t2, ~melody.(endChord: endChord, endOctave: endOctave),
   ])
 };
@@ -589,6 +607,7 @@ SynthDef(\limiter, { arg out=0, thresh=0.5, slopeBelow=1.0, slopeAbove=1.0, clam
 ]);
 ~sequence.trace.play;
 )
+<<<<<<< HEAD:sc/computer_music/winter/final/main.scd
 
 
 ~d.trace.play
@@ -596,3 +615,12 @@ SynthDef(\limiter, { arg out=0, thresh=0.5, slopeBelow=1.0, slopeAbove=1.0, clam
 ~c.trace.play
 ~a1.trace.play
 ~a2.trace.play
+||||||| parent of 36a31b5 (add some stuff):computer_music/winter/final/main.scd
+=======
+
+~d.trace.play
+~roll.(3).trace.play
+~c.trace.play
+~a1.trace.play
+~a2.trace.play
+>>>>>>> 36a31b5 (add some stuff):computer_music/winter/final/main.scd
