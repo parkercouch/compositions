@@ -7,12 +7,10 @@ let
     src = pkgs.fetchFromGitHub {
       owner = "davidgranstrom";
       repo = "scnvim";
-      rev = "58416e80e225a4aa896886fd92b8c3580524210a";
-      sha256 = "033dsi5cgy5w9sqyjan7sr37c0kbmisw51fq1vz8767r6z8jbv40";
-      # experimental branch
-      # rev = "5159f7edad91edd0647c1825fedb83d441d9790d";
-      # sha256 = "193laxq1c8lil4hpa229r69fk7n8gxr9ajiyms37p1ql03lz6dcl";
+      rev = "67eb22f5d913f6b8096427a0810a3ebc51156a74";
+      hash = "sha256-FtGcW5CjYIW7717z3q+RC55k6cUEA0w6VSqvJSXgKrM=";
     };
+    buildInputs = with pkgs; [ stylua lua53Packages.luacheck ];
   };
 
   vim-floaterm = pkgs.vimUtils.buildVimPlugin {
@@ -49,13 +47,34 @@ let
   neovim_for_supercollider = pkgs.neovim.override {
     vimAlias = true;
     configure = {
-      customRC = builtins.readFile .vim/vimrc;
+      customRC = builtins.readFile ../.vimrc;
       packages.myVimPackage = with unstable.vimPlugins; {
         start = [
           scnvim
-          ultisnips
+
+          luasnip
+          nvim-cmp
+          nvim-lspconfig
+          cmp-nvim-lsp
+          cmp_luasnip
+          cmp-git
+          cmp-nvim-tags
+          cmp-treesitter
+
+          # nvim-treesitter
+          (nvim-treesitter.withPlugins (
+            plugins: with plugins; [
+              nix
+              python
+              supercollider
+              lua
+              rust
+            ]
+          ))
+          onedarkpro-nvim
+          onedark-nvim
+
           context
-          deoplete-nvim
 
           vim-floaterm # floating term
           terminus # improve terminal support
@@ -97,6 +116,8 @@ in
 
       python38
       python38Packages.msgpack
+
+      sumneko-lua-language-server
 
       # supercollider
     ];
