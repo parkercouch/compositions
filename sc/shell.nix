@@ -94,7 +94,7 @@ let
           lexima-vim      # paren/quotes wrapping, TODO: look for replacement?
           fugitive        # Git stuff
           colorsamplerpack # all the colors
-          vim-which-key   # menu for <leader> commands
+          which-key-nvim   # menu for <leader> commands
           ranger-vim      # ranger in vim
           neoterm         # manage terminals
         ];
