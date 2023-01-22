@@ -274,7 +274,7 @@ SynthDef(\limiter, { arg out=0, thresh=0.5, slopeBelow=1.0, slopeAbove=1.0, clam
     iScale: 2,
     atk: 0.1,
     amp: 0.8,
-    strum: 0.5,
+    // strum: 0.5,
   ])
 };
 
@@ -590,6 +590,7 @@ SynthDef(\limiter, { arg out=0, thresh=0.5, slopeBelow=1.0, slopeAbove=1.0, clam
 // ----------------------------------------------------------------- //
 
 (
+TempoClock.default.tempo = 55 / 60;
 ~sequence = Pseq([
   ~intro,
   ~a1,

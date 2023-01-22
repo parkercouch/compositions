@@ -252,7 +252,7 @@ SynthDef.new(\bands2,
 				arg i, peakT, env, eShape ;
 				peakT = (i+1) * tinc ; // current peak time
 				eShape = Env.new([0,1,0], [peakT, 1-peakT]) ;
-				env = EnvGen.ar(eShape, timeScale: dur) ;
+				env = EnvGen.ar(eShape, timeScale: dur, doneAction: 2) ;
 				env * SinOsc.ar(flist1[i], mul: amp) ;
 			}
 		);
@@ -265,7 +265,7 @@ SynthDef.new(\bands2,
 				arg i, peakT, env, eShape ;
 				peakT = (i+1) * tinc ; // current peak time
 				eShape = Env.new([0,1,0], [peakT, 1-peakT]) ;
-				env = EnvGen.ar(eShape, timeScale: dur) ;
+				env = EnvGen.ar(eShape, timeScale: dur, doneAction: 2) ;
 				env * SinOsc.ar(flist2[i], mul: amp) ;
 			}
 		);
