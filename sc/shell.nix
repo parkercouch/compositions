@@ -13,6 +13,17 @@ let
     buildInputs = with pkgs; [ stylua lua53Packages.luacheck ];
   };
 
+  # todo: update build so scnvim can access
+  fzf-sc = pkgs.vimUtils.buildVimPlugin {
+    name = "fzf-sc";
+    src = pkgs.fetchFromGitHub {
+      owner = "madskjeldgaard";
+      repo = "fzf-sc";
+      rev = "33859f2b419e74a84e5edca8741a84f6d5dc9f49";
+      hash = "sha256-K2zWLnUYwgG3pMWffu7Hq66XMAV5lXDHYCFpsNSdkvA=";
+    };
+  };
+
   vim-floaterm = pkgs.vimUtils.buildVimPlugin {
     name = "vim-floaterm";
     src = pkgs.fetchFromGitHub {
@@ -50,6 +61,7 @@ let
       customRC = builtins.readFile ../.vimrc;
       packages.myVimPackage = with unstable.vimPlugins; {
         start = [
+          fzf-sc
           scnvim
 
           luasnip

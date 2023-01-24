@@ -165,26 +165,6 @@ set shortmess+=c
 nmap <C-i> <Plug>(scnvim-show-signature)
 
 
-" AutoComplete and Snippets
-"
-" Ctrl + j/k - Move up and down autocomplete list
-" Ctrl + l   - Select item (will expand snippets)
-" Ctrl + l   - Jump to next snippet empty location
-
-
-" Ctrl + j/k goes up and down autocomplete (or triggers if not shown)
-" TODO: fix this
-" inoremap <silent><expr> <C-j>
-"       \ pumvisible() ? "\<C-n>" :
-"       \ deoplete#manual_complete()
-" inoremap <silent><expr> <C-k>
-"       \ pumvisible() ? "\<C-p>" :
-"       \ deoplete#manual_complete()
-
-" Ctrl + l selects autocomplete. Or expands snippet if no dropdown
-" imap <expr> <C-l> pumvisible() ? "\<C-y>" : ":call UltiSnips#ExpandSnippetOrJump()"
-
-
 " let g:fzf_layout = { 'window': { 'width': 0.9, 'height': 0.6 } }
 let g:fzf_layout = { 'window': { 
       \ 'border': 'sharp',
@@ -207,7 +187,8 @@ set splitbelow
 set splitright
 
 " Fix autofix problem of current line
-nmap <leader>qf  <Plug>(coc-fix-current)
+" todo code action: update to lsp code action
+nmap <leader>qf <esc>
 
 let g:sneak#label = 1
 let g:gitgutter_set_sign_backgrounds = 1
@@ -239,13 +220,10 @@ set completeopt=menu,menuone,noselect
 
 lua << EOF
 
-
 require('onedark').setup {
     style = 'warmer'
 }
-
 require('onedark').load()
--- require('vimrc.lua')
 
 require'nvim-treesitter.configs'.setup {
   highlight = {
@@ -367,6 +345,7 @@ which_key.register({
     p = {"<cmd>cprevious<cr>", "previous-quickfix"     } ,
     c = {"<cmd>cc<cr>", "current-quickfix"     } ,
     l = {"<cmd>lopen<cr>", "open-locationlist" } ,
+    -- f = {"todo", "fix-current"},
     f = "fix-current",
   },
 
@@ -516,6 +495,13 @@ scnvim.setup {
       enabled = true,
     },
   },
+  --[[ todo fzf-sc: after fixing plugin build; re-enable
+  extensions = {
+    ['fzf-sc'] = {
+      search_plugin = 'fzf-vim',
+    },
+  }
+  --]]
 }
 
 
@@ -578,6 +564,10 @@ require'luasnip'.snippets.supercollider = append_to_table(
 -- Add SCNvim snippets to LuaSnip
 -- Note: This replaces any supercollider snippets already present in LuaSnip
 require('luasnip').add_snippets('supercollider', require'scnvim.utils'.get_snippets())
+
+--[[ todo fzf-sc: after fixing plugin build; re-enable
+scnvim.load_extension('fzf-sc')
+--]]
 
 local cmp = require'cmp'
 local luasnip = require'luasnip'
