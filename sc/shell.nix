@@ -24,56 +24,49 @@ let
     };
   };
 
-  vim-floaterm = pkgs.vimUtils.buildVimPlugin {
-    name = "vim-floaterm";
-    src = pkgs.fetchFromGitHub {
-      owner = "voldikss";
-      repo = "vim-floaterm";
-      rev = "0e3f28e2532a04b8aeeb77dde4648ed77f07fa4a";
-      sha256 = "06gzmwxhy4vaqdwdszq00d3lc5c83align37dmqx5fpm03fhyafq";
-    };
-  };
-
-  terminus = pkgs.vimUtils.buildVimPlugin {
-    name = "terminus";
-    src = pkgs.fetchFromGitHub {
-      owner = "wincent";
-      repo = "terminus";
-      rev = "e47679a48852b12c6c150e006125f813ed9a81b1";
-      sha256 = "00514pr5ds6v3qfsal84ma6hgsnq2ci20yk8pq0i00fx2k8v2pr9";
-    };
-  };
-
-  context = pkgs.vimUtils.buildVimPlugin {
-    name = "context";
-    src = pkgs.fetchFromGitHub {
-      owner = "wellle";
-      repo = "context.vim";
-      rev = "e38496f1eb5bb52b1022e5c1f694e9be61c3714c";
-      sha256 = "1iy614py9qz4rwk9p4pr1ci0m1lvxil0xiv3ymqzhqrw5l55n346";
-    };
-  };
-
-  # neovim_for_supercollider = unstable.neovim.override {
-  neovim_for_supercollider = pkgs.neovim.override {
+  neovim_for_supercollider = unstable.neovim.override {
     vimAlias = true;
     configure = {
-      customRC = builtins.readFile ../.vimrc;
+      customRC = ''
+        ${builtins.readFile ../.vimrc}
+        lua <<EOF
+        ${builtins.readFile ../.vimrc.lua}
+        EOF
+      '';
       packages.myVimPackage = with unstable.vimPlugins; {
         start = [
-          fzf-sc
-          scnvim
+          fzf-sc                  # supercollider fzf source
+          scnvim                  # supercollider frontend
+          luasnip                 # lua programmable snippets
 
-          luasnip
-          nvim-cmp
-          nvim-lspconfig
+          vim-commentary          # add/remove comments
+          vim-repeat              # more commands are . repeatable
+          vim-unimpaired          # extra keybindings
+          vim-surround            # '' "" () []
+          vim-sneak               # jump to 2 character
+          nvim-treesitter-context # show current f(x) context
+          vim-floaterm            # floating term
+          terminus                # improve terminal support
+          lualine-nvim            # status bar
+          vim-nix                 # nix-shell file support
+          gitgutter               # show changes in gutter
+          fzfWrapper              # fzf
+          fzf-vim                 # common commands bound to fzf
+          lexima-vim              # paren/quotes wrapping, TODO: look for replacement?
+          fugitive                # Git stuff
+          which-key-nvim          # menu for <leader> commands
+          ranger-vim              # ranger in vim
+
+          nvim-cmp                # autocomplete
+          nvim-lspconfig          # quick lsp configs
+          # cmp sources
           cmp-nvim-lsp
           cmp_luasnip
           cmp-git
           cmp-nvim-tags
           cmp-treesitter
 
-          # nvim-treesitter
+          # nvim-treesitter for better syntax
           (nvim-treesitter.withPlugins (
             plugins: with plugins; [
               nix
@@ -83,32 +76,10 @@ let
               rust
             ]
           ))
+
+          # color schemes
           onedarkpro-nvim
           onedark-nvim
-
-          context
-
-          vim-floaterm # floating term
-          terminus # improve terminal support
-
-          # Base vim plugins from tpope
-          vim-commentary
-          vim-repeat
-          vim-unimpaired
-          vim-surround
-          vim-sneak
-
-          lightline-vim   # status bar
-          vim-nix         # nix-shell file support
-          gitgutter       # show changes in gutter
-          fzfWrapper      # fzf
-          fzf-vim         # common commands bound to fzf
-          lexima-vim      # paren/quotes wrapping, TODO: look for replacement?
-          fugitive        # Git stuff
-          colorsamplerpack # all the colors
-          which-key-nvim   # menu for <leader> commands
-          ranger-vim      # ranger in vim
-          neoterm         # manage terminals
         ];
         opt = [
           # add optionally loaded packages
@@ -130,6 +101,8 @@ in
       python38Packages.msgpack
 
       sumneko-lua-language-server
+      nil # nix language server
+      nodePackages_latest.vim-language-server
 
       # supercollider
     ];

@@ -38,7 +38,7 @@ s.waitForBoot({
   );
 
   ~seq = ~synths[\functions][\limiter].(~seq, 0.5);
-  ~seq.play(clock: TempoClock(90/6));
+  // ~seq.play(clock: TempoClock(90/6));
 });
 )
 
