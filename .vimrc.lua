@@ -1,3 +1,85 @@
+local set = vim.opt
+
+set.compatible = false
+set.number = true
+
+set.linebreak = true
+set.showbreak = '⮨'
+set.textwidth = 120
+
+set.visualbell = true
+set.vb.t_vb='[?5h$<100>[?5l'
+
+set.hlsearch = true
+set.smartcase = true
+set.ignorecase = true
+set.incsearch = true
+
+set.autoindent = true
+set.expandtab = true
+set.shiftwidth = 2
+set.smartindent = true
+set.smarttab = true
+set.softtabstop = 2
+
+set.path:append('**')
+set.wildmenu = true
+set.showcmd = true
+set.mouse = 'a'
+set.splitbelow = true
+set.splitright = true
+set.showmatch = true
+set.ruler = true
+set.shell = 'zsh -i'
+set.history = 200
+set.undolevels = 1000
+set.backspace = {'indent','eol','start'}
+set.updatetime = 100
+set.signcolumn = 'yes:1'
+set.hidden = true
+set.backup = false
+set.writebackup = false
+-- don't give |ins-completion-menu| messages.
+set.shortmess:append('c')
+-- todo: which is best setting?
+set.cmdheight = 1
+set.completeopt = {'menu','menuone','noselect'}
+set.laststatus = 2
+set.ttimeoutlen = 50
+set.showmode = false
+
+vim.keymap.set('n', '<Space>', '<Leader>', {
+  remap = true, desc = 'Space is Leader'
+})
+vim.keymap.set('t', '<Esc>', [[<C-\><C-n>]], {
+  desc = 'Esc in terminal'
+})
+
+vim.g.fzf_layout = {
+  window = {
+    border = 'sharp',
+    xoffset = 1,
+    yoffset = 1,
+    width = 1,
+    height = 0.3,
+  },
+}
+
+vim.g.lexima_enable_basic_rules = 1
+vim.g.lexima_enable_newline_rules = 1
+vim.g.lexima_enable_endwise_rules = 1
+
+vim.g.ranger_replace_netrw = 1
+vim.keymap.set('n', '-', ':<C-u>RangerEdit<CR>', {
+  silent = true, remap = true, desc = 'Open ranger'
+})
+
+vim.g['sneak#label'] = 1
+
+vim.g.gitgutter_map_keys = 1
+vim.g.gitgutter_set_sign_backgrounds = 1
+vim.g.gitgutter_highlight_linenrs = 1
+
 require('onedark').setup {
     style = 'warmer'
 }
@@ -63,15 +145,15 @@ which_key.setup {
     scroll_up = '<c-u>',
   },
   window = {
-    border = "none", -- none, single, double, shadow
+    border = "shadow", -- none, single, double, shadow
     position = "bottom", -- bottom, top
     -- [top, right, bottom, left]
-    margin = { 1, 0, 1, 0 },
-    padding = { 2, 2, 2, 2 },
+    margin = { 1, 0, 0, 0 },
+    padding = { 0, 0, 0, 0 },
     winblend = 0
   },
   layout = {
-    height = { min = 4, max = 25 },
+    height = { min = 4, max = 10 },
     width = { min = 20, max = 50 },
     spacing = 3,
     align = "left",
@@ -495,7 +577,7 @@ sign({name = 'DiagnosticSignHint', text = '⚑'})
 sign({name = 'DiagnosticSignInfo', text = ''})
 
 vim.diagnostic.config({
-  virtual_text = false,
+  virtual_text = true,
   severity_sort = true,
   float = {
     border = 'rounded',
