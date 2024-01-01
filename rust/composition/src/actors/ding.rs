@@ -7,6 +7,7 @@ use xactor::*;
 use crate::osc::OscSenderManager;
 
 #[message]
+#[derive(Debug,Clone)]
 pub struct Ding(pub i32);
 
 #[derive(new)]

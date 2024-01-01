@@ -2,11 +2,12 @@ use async_osc::prelude::*;
 use async_osc::{OscPacket, OscType};
 use async_std::task;
 use futures::StreamExt;
-use spring_final::actors::blah::{Blah, Blaher};
-use spring_final::actors::cont::{Continue, Continuer};
-use spring_final::actors::ding::{Ding, Dinger};
-use spring_final::actors::pierce::{Pierce, Piercer};
-use spring_final::osc::create_osc_connection_pool;
+use composition::actors::blah::{Blah, Blaher};
+use composition::actors::cont::{Continue, Continuer};
+use composition::actors::ding::{Ding, Dinger};
+use composition::actors::messenger::{Messenger, Message, Dingg};
+use composition::actors::pierce::{Pierce, Piercer};
+use composition::osc::{create_osc_connection_pool, load_sc_scripts};
 use structopt::StructOpt;
 use xactor::*;
 
@@ -32,11 +33,27 @@ struct Opt {
     /// Which port to listen for OSC messages on
     #[structopt(short = "r", long = "recv_port", default_value = "8080")]
     recv_port: u32,
+
+    /// scd file to load into new server
+    #[structopt(short = "l", long = "load_path")]
+    load_path: Option<String>,
 }
 
 #[xactor::main]
 async fn main() -> anyhow::Result<()> {
     let opt = Opt::from_args();
+    let port = opt.send_port;
+
+    if let Some(load_path) = opt.load_path {
+        let _sclang = spawn(async move {
+            let child = load_sc_scripts(port, load_path);
+            println!("IN,BEFORE: sclang/scsynth started");
+            task::sleep(std::time::Duration::from_millis(500)).await;
+            println!("IN,AFTER: sclang/scsynth started");
+            child
+        });
+        println!("OUT: sclang/scsynth started");
+    }
 
     let (osc_sender_pool, mut osc_listener) =
         create_osc_connection_pool(opt.send_port, opt.recv_port).await?;
@@ -50,6 +67,8 @@ async fn main() -> anyhow::Result<()> {
     let blah_addr = Supervisor::start(move || Blaher::new(osc_sender.clone())).await?;
     let osc_sender = osc_sender_pool.clone();
     let continue_addr = Supervisor::start(move || Continuer::new(osc_sender.clone())).await?;
+    let osc_sender = osc_sender_pool.clone();
+    let messenger_addr = Supervisor::start(move || Messenger::new(osc_sender.clone())).await?;
 
     // test send
     if opt.debug {
@@ -75,22 +94,29 @@ async fn main() -> anyhow::Result<()> {
             OscPacket::Bundle(_) => {}
             OscPacket::Message(message) => match message.as_tuple() {
                 ("/hello", &[OscType::String(ref msg)]) => {
-                    eprintln!("Hello: {}", msg);
+                    println!("Hello: {}", msg);
                 }
                 ("/dong", &[OscType::Int(scale)]) => {
-                    eprintln!("Dong: {}", scale);
-                    eprintln!("Dinging: {}", scale * 2);
+                    println!("Dong: {}", scale);
+                    println!("Dinging: {}", scale * 2);
                     ding_addr.send(Ding(scale * 2))?;
+                }
+                ("/pierce", &[OscType::Int(scale), OscType::Int(length)]) => {
+                    // pierce_addr.send(Pierce::new(scale, length))?;
+                    messenger_addr.send(Message::new("/piercing".into(), scale.into(), length.into()))?;
                 }
                 ("/start", &[OscType::Int(seed), OscType::Int(other)]) => {
                     let ding_addr = ding_addr.clone();
-                    let pierce_addr = pierce_addr.clone();
+                    let _pierce_addr = pierce_addr.clone();
                     let continue_addr = continue_addr.clone();
+                    let messenger_addr = messenger_addr.clone();
                     spawn(async move {
-                        eprintln!("Start: {}", seed);
-                        pierce_addr.send(Pierce::new(seed / 2, other * 2)).unwrap();
+                        println!("Start: {}", seed);
+                        // pierce_addr.send(Pierce::new(seed / 2, other * 2)).unwrap();
+                        messenger_addr.send(Message::new("/piercing".into(), (seed / 2) as f64, (other * 2) as f64)).unwrap();
                         for i in 1..=seed * 2 {
                             task::sleep(std::time::Duration::from_millis(other as u64)).await;
+                            messenger_addr.send(Dingg(i)).unwrap();
                             ding_addr.send(Ding(i)).unwrap();
                         }
                         continue_addr

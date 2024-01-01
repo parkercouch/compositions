@@ -1,16 +1,17 @@
 [package]
-name = "spring_final"
-version = "0.1.0"
+name = "composition"
+version = "0.0.1"
 authors = ["parker couch <code@parkercouch.dev>"]
 edition = "2018"
 
 [dependencies]
 async-osc = "0.2"
-async-std = { version = "1.9", features = [ "attributes" ] }
+async-std = { version = "1.12", features = [ "attributes", "unstable" ] }
 async-trait = "0.1"
 anyhow = "1.0"
 futures = { version = "0.3", features = [  ] }
 structopt = "0.3"
+shaku = "0.6"
 xactor = "0.7"
 
 mobc = { version = "0.7", features = ["async-std"] }

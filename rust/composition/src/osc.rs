@@ -37,3 +37,18 @@ impl Manager for OscSenderManager {
         Ok(conn)
     }
 }
+
+use async_std::process::{Child, Command, Stdio};
+
+pub fn load_sc_scripts(send_port: u32, path: String) -> Child {
+    Command::new("sclang")
+        .arg("-r")
+        .arg("-D")
+        .arg("-u")
+        .arg(send_port.to_string())
+        .arg(path)
+        .stdin(Stdio::null())
+        .stderr(Stdio::null())
+        .spawn()
+        .expect("scsynth failed to start")
+}
