@@ -49,10 +49,8 @@ SynthDef.new(\bands2, {
   // create the envelope shapes for the final mix
   tlist = [1/5, 1/5, 1/5, 1/5, 1/5] ;
   mixShape = Env.new([0, 1, 0, 1, 0, 1], tlist) ;
-  // mixShape = Env.new([0, 1, 0, 1, 0, 1], [1/5, 1/5, 1/5, 1/5, 1/5]) ;
   mix1 = EnvGen.ar(mixShape, timeScale: dur) ;
   mixShape = Env.new([1, 0, 1, 0, 1, 0], tlist) ;
-  //mixShape = Env.new([1, 0, 1, 0, 1], [1/4, 1/4, 1/4, 1/4]) ;
   mix2 = EnvGen.ar(mixShape, timeScale: dur) ;
 
   // mix the two bands together and send to output
@@ -82,6 +80,7 @@ synths[\list].add(\sawpulse);
 ~chord = { |range = 1.0|
     ~voices collect: { exprand(180 / range, 260 * range) }
 };
+
 SynthDef(\presence, {
   arg distort_ratio = 1.4,
       lo = 1,

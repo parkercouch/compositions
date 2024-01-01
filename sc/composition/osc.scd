@@ -1,7 +1,3 @@
-// ----------------------------------------------------------------- //
-// ---------------------------- Osc -------------------------------- //
-// ----------------------------------------------------------------- //
-
 (
 var patterns = "./patterns.scd".loadRelative[0];
 var misc = "./misc.scd".loadRelative[0];
@@ -14,7 +10,6 @@ OSCdef(\ding, {|msg, time, addr, recvPort|
   var scale;
   [msg, time, addr, recvPort].postln;
 
-  // Extract optional scale parameter from message
   if (msg[1].isNumber) {scale = msg[1]} {scale = 1};
 
   {
@@ -30,11 +25,9 @@ OSCdef(\blah, {|msg, time, addr, recvPort|
   var scale, length;
   [msg, time, addr, recvPort].postln;
 
-  // Extract optional parameters from message
   if (msg[1].isNumber) {scale = msg[1]} {scale = 1};
   if (msg[2].isNumber) {length = msg[2]} {length = 20};
 
-  // TODO: use global tempo or pass it in?
   patterns[\blah].(scale, length).play(clock: TempoClock(120/60))
 }, '/blah');
 
@@ -44,11 +37,21 @@ OSCdef(\piercing, {|msg, time, addr, recvPort|
   var scale, length;
   [msg, time, addr, recvPort].postln;
 
-  // Extract optional parameters from message
   if (msg[1].isNumber) {scale = msg[1]} {scale = 1};
   if (msg[2].isNumber) {length = msg[2]} {length = 20};
 
-  // TODO: use global tempo or pass it in?
+  patterns[\piercing].(scale, length).play(clock: TempoClock(120/60))
+}, '/piercing');
+
+osc[\list].add(\piercing);
+
+OSCdef(\basic_note, {|msg, time, addr, recvPort|
+  var scale, length;
+  [msg, time, addr, recvPort].postln;
+
+  if (msg[1].isNumber) {scale = msg[1]} {scale = 1};
+  if (msg[2].isNumber) {length = msg[2]} {length = 20};
+
   patterns[\piercing].(scale, length).play(clock: TempoClock(120/60))
 }, '/piercing');
 
@@ -58,7 +61,6 @@ OSCdef(\continue, {|msg, time, addr, recvPort|
   var seed, other;
   [msg, time, addr, recvPort].postln;
 
-  // Extract optional parameters from message
   if (msg[1].isNumber) {seed = msg[1]} {seed = 1};
   if (msg[2].isNumber) {other = msg[2]} {other = 20};
 

@@ -11,9 +11,6 @@ Multi tempo composition
 ( // --- START
 Server.default = s = Server.internal.boot;
 TempoClock.default.tempo = 1;
-s.options.numOutputBusChannels = 2;
-s.options.numInputBusChannels = 2;
-s.options.memSize = 2.pow(20);
 s.reboot;
 
 s.waitForBoot({

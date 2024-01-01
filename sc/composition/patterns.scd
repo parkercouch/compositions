@@ -55,6 +55,19 @@ patterns[\blah] = ~blah;
   ])
 };
 
+~basic = {
+  arg scale = 2.9,
+      length = inf;
+
+  Pbind(*[
+    instrument: \default,
+    freq: Pseq([100, 150], inf),
+    dur:  Pseq([ 0.1, 0.1, 0.1, 0.2, 0.5, 1], inf),
+    amp: 0.8,
+    length: Pseq([0], length),
+  ])
+};
+
 patterns[\piercing] = ~piercing;
 
 patterns
