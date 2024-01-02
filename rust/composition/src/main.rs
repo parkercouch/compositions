@@ -1,13 +1,10 @@
-use async_osc::prelude::*;
-use async_osc::{OscPacket, OscType};
 use async_std::task;
 use composition::actors::messenger::{Message, Messenger};
+use composition::actors::receiver::{Listen, Receiver};
 use composition::messages::blah::Blah;
-use composition::messages::cont::Continue;
 use composition::messages::ding::Ding;
 use composition::messages::pierce::Pierce;
 use composition::osc::{create_osc_connection_pool, load_sc_scripts};
-use futures::StreamExt;
 use structopt::StructOpt;
 use xactor::*;
 
@@ -52,7 +49,7 @@ async fn main() -> anyhow::Result<()> {
         });
     }
 
-    let (osc_sender_pool, mut osc_listener) =
+    let (osc_sender_pool, osc_listener) =
         create_osc_connection_pool(opt.send_port, opt.recv_port).await?;
 
     let messenger_addr = Supervisor::start(move || Messenger::new(osc_sender_pool.clone())).await?;
@@ -74,44 +71,9 @@ async fn main() -> anyhow::Result<()> {
         messenger_addr.send(Message::new("/any", vec![0.5, 15.]))?;
     }
 
-    // recv loop - TODO: move into other thread or maybe it's own actor?
-    while let Some(packet) = osc_listener.next().await {
-        let (packet, peer_addr) = packet?;
-        eprintln!("Receive from {}: {:?}", peer_addr, packet);
-        match packet {
-            OscPacket::Bundle(_) => {}
-            OscPacket::Message(message) => match message.as_tuple() {
-                ("/hello", &[OscType::String(ref msg)]) => {
-                    println!("Hello: {}", msg);
-                }
-                ("/dong", &[OscType::Int(scale)]) => {
-                    println!("Dong: {}", scale);
-                    println!("Dinging: {}", scale * 2);
-                    messenger_addr.send(Ding(scale * 2))?;
-                }
-                ("/pierce", &[OscType::Int(scale), OscType::Int(length)]) => {
-                    messenger_addr.send(Pierce::new(scale, length))?;
-                }
-                ("/start", &[OscType::Int(seed), OscType::Int(other)]) => {
-                    let messenger_addr = messenger_addr.clone();
-                    spawn(async move {
-                        println!("Start: {}", seed);
-                        messenger_addr
-                            .send(Pierce::new(seed / 2, other * 2))
-                            .unwrap();
-                        for i in 1..=seed * 2 {
-                            task::sleep(std::time::Duration::from_millis(other as u64)).await;
-                            messenger_addr.send(Ding(i)).unwrap();
-                        }
-                        messenger_addr
-                            .send(Continue::new(seed - 2, other + 1))
-                            .unwrap();
-                    });
-                }
-                _ => {}
-            },
-        }
-    }
-
-    Ok(())
+    Receiver::new(osc_listener, messenger_addr)
+        .start()
+        .await?
+        .call(Listen)
+        .await?
 }
