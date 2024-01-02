@@ -1,6 +1,9 @@
+use std::sync::Arc;
+
 use async_std::task;
 use composition::actors::messenger::{Message, Messenger};
 use composition::actors::receiver::{Listen, Receiver};
+use composition::actors::sequencer::{Sequence, Sequencer};
 use composition::messages::blah::Blah;
 use composition::messages::ding::Ding;
 use composition::messages::pierce::Pierce;
@@ -21,7 +24,7 @@ struct Opt {
 
     /// How many notes
     #[structopt(short = "n", long = "notes", default_value = "10")]
-    notes: i32,
+    notes: u8,
 
     /// Which port to send OSC messages to (SC listening port)
     #[structopt(short = "s", long = "send_port", default_value = "57120")]
@@ -54,11 +57,19 @@ async fn main() -> anyhow::Result<()> {
 
     let messenger_addr = Supervisor::start(move || Messenger::new(osc_sender_pool.clone())).await?;
 
+    let sequencer_addr = {
+        let handle = Arc::new(tokio::runtime::Runtime::new()?);
+        let addr = messenger_addr.clone();
+        Supervisor::start(move || Sequencer::new(addr.clone(), handle.clone())).await?
+    };
+
     // test send
     if opt.debug {
+        sequencer_addr.send(Sequence::new(opt.notes))?;
+
         for i in 1..=opt.notes {
             task::sleep(std::time::Duration::from_millis(opt.wait)).await;
-            messenger_addr.send(Ding(i))?;
+            messenger_addr.send(Ding(i.into()))?;
         }
 
         task::sleep(std::time::Duration::from_millis(opt.wait)).await;

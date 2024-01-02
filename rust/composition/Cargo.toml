@@ -5,6 +5,9 @@ authors = ["parker couch <code@parkercouch.dev>"]
 edition = "2018"
 
 [dependencies]
+delux_proto = { path = "../delux_proto" }
+tokio = { version = "1.35", features = [ "rt-multi-thread" ] }
+
 async-osc = "0.2"
 async-std = { version = "1.12", features = [ "attributes", "unstable" ] }
 async-trait = "0.1"

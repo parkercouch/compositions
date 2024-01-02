@@ -1,3 +1,4 @@
 *.swp
 **/scratch_.sc
 **/.direnv/
+**/target/

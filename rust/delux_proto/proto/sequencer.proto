@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "deluxington.sequencer";
+option java_outer_classname = "SequencerProto";
+
+package sequencer;
+
+// The sequencer service definition.
+service Sequencer {
+  // Stream a sequence of notes
+  rpc  GenerateSequence(SequenceRequest) returns (stream Note) {}
+}
+
+// Request a sequence of specified length
+message SequenceRequest {
+  string name = 1;
+  int32 length = 2;
+}
+
+// A note from the sequencer
+message Note {
+  double freq = 1;
+  double length = 2;
+  double amp = 3;
+}
