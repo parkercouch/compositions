@@ -3,11 +3,12 @@ use std::sync::Arc;
 use async_std::task;
 use composition::actors::messenger::{Message, Messenger};
 use composition::actors::receiver::{Listen, Receiver};
+use composition::actors::scsynth::{SCSynth, Start};
 use composition::actors::sequencer::{Sequence, Sequencer};
 use composition::messages::blah::Blah;
 use composition::messages::ding::Ding;
 use composition::messages::pierce::Pierce;
-use composition::osc::{create_osc_connection_pool, load_sc_scripts};
+use composition::osc::create_osc_connection_pool;
 use structopt::StructOpt;
 use xactor::*;
 
@@ -42,16 +43,17 @@ struct Opt {
 #[xactor::main]
 async fn main() -> anyhow::Result<()> {
     let opt = Opt::from_args();
-    let port = opt.send_port;
 
     if let Some(load_path) = opt.load_path {
-        let _sclang = spawn(async move {
-            let child = load_sc_scripts(port, load_path);
-            task::sleep(std::time::Duration::from_millis(500)).await;
-            child
-        });
+        let send_port = opt.send_port;
+        let scsynth_addr = Supervisor::start(SCSynth::default).await?;
+        scsynth_addr
+            .call(Start {
+                load_path,
+                send_port,
+            })
+            .await?;
     }
-
     let (osc_sender_pool, osc_listener) =
         create_osc_connection_pool(opt.send_port, opt.recv_port).await?;
 
